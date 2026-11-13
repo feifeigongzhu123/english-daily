@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f3ea">
+  <meta name="description" content="英词通 —— 外研版初中、高中英语词汇听读与课文跟读工具，作者：安得半日闲。">
+  <title>英词通 · 外研版词汇听读</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="page-glow" aria-hidden="true"></div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img">
+            <defs>
+              <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ff8a5c"/>
+                <stop offset="1" stop-color="#e8613c"/>
+              </linearGradient>
+            </defs>
+            <rect width="48" height="48" rx="15" fill="url(#brandGradient)"/>
+            <path d="M13 17.2c4.2-1.8 7.8-1.5 11 1.2v14.4c-3.2-2.4-6.8-2.7-11-1.2V17.2Z" fill="#fffdf8" opacity=".96"/>
+            <path d="M35 17.2c-4.2-1.8-7.8-1.5-11 1.2v14.4c3.2-2.4 6.8-2.7 11-1.2V17.2Z" fill="#fffdf8" opacity=".72"/>
+            <path d="M38.5 19.5c1.6 2.6 1.6 5.4 0 8" fill="none" stroke="#fffdf8" stroke-width="1.8" stroke-linecap="round" opacity=".85"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>英词通</h1>
+          <p>外研版 · 听读打卡</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="streak-chip" id="streakChip" type="button" title="查看打卡">
+          <span class="flame" aria-hidden="true">🔥</span>
+          <b id="streakNum">0</b><span>天</span>
+        </button>
+        <button class="icon-btn" id="settingsBtn" type="button" title="设置" aria-label="打开设置">⚙</button>
+      </div>
+    </header>
+
+    <section class="library" aria-label="教材选择">
+      <div class="library-row">
+        <div class="stage-switch" id="stageSwitch" role="tablist" aria-label="学段">
+          <button class="stage-btn active" data-stage="junior" type="button" role="tab">初中</button>
+          <button class="stage-btn" data-stage="senior" type="button" role="tab">高中</button>
+        </div>
+        <div class="selects">
+          <label class="select-wrap">
+            <span>教材</span>
+            <select id="bookSelect" aria-label="选择教材"></select>
+          </label>
+          <label class="select-wrap">
+            <span>单元</span>
+            <select id="unitSelect" aria-label="选择单元"></select>
+          </label>
+        </div>
+      </div>
+      <div class="library-meta">
+        <span id="bookMeta">正在加载词库…</span>
+        <span id="unitProgressText">0 / 0 已学</span>
+      </div>
+    </section>
+
+    <nav class="tabs" id="tabs" aria-label="功能切换">
+      <button class="tab active" data-tab="words" type="button"><span aria-hidden="true">📖</span>单词</button>
+      <button class="tab" data-tab="passage" type="button"><span aria-hidden="true">🎧</span>课文跟读</button>
+      <button class="tab" data-tab="review" type="button"><span aria-hidden="true">🧠</span>复习</button>
+      <button class="tab" data-tab="checkin" type="button"><span aria-hidden="true">🗓️</span>打卡</button>
+    </nav>
+
+    <main class="main">
+      <section class="view active" id="view-words" aria-labelledby="unitTitle">
+        <div class="unit-head">
+          <div class="unit-heading">
+            <p class="eyebrow" id="unitEyebrow">Module 1</p>
+            <h2 id="unitTitle">My classmates</h2>
+            <p class="unit-sub" id="unitSub">6 个单词 · 听一听，读一读</p>
+          </div>
+          <div class="unit-actions">
+            <button class="btn primary" id="autoPlayBtn" type="button"><span class="btn-icon">▶</span>自动播放</button>
+          </div>
+        </div>
+
+        <div class="progress-card">
+          <div class="progress-top"><span>本单元进度</span><b id="unitProgressPct">0%</b></div>
+          <div class="progress-track"><i id="unitProgressBar"></i></div>
+        </div>
+
+        <div class="word-list" id="wordList"></div>
+
+        <div class="list-footer">
+          <button class="btn soft small" id="markAllBtn" type="button">全部标记已学</button>
+          <p>核心词例句按教材主题编写；扩展词例句为学习用示例，词形变化供参考，建议以教材/词典为准。</p>
+        </div>
+      </section>
+
+      <section class="view" id="view-passage" aria-labelledby="passageTitle">
+        <div class="unit-head">
+          <div class="unit-heading">
+            <p class="eyebrow">课文跟读</p>
+            <h2 id="passageTitle">My classmates</h2>
+            <p class="unit-sub">先听一遍，再逐句跟读。短文按单元主题编写，可替换为课文原文。</p>
+          </div>
+          <div class="unit-actions">
+            <button class="btn primary" id="passagePlayBtn" type="button"><span class="btn-icon">▶</span>播放全文</button>
+            <button class="btn ghost" id="passageZhBtn" type="button">显示译文</button>
+          </div>
+        </div>
+
+        <div class="textbook-card" id="textbookCard">
+          <div class="textbook-head">
+            <div>
+              <p class="eyebrow">教材原文</p>
+              <h3>课文原文与跟读</h3>
+            </div>
+            <span class="textbook-badge">版权归原出版社 · 仅供个人学习</span>
+          </div>
+          <div class="textbook-body" id="textbookBody"></div>
+          <div class="textbook-zh hidden" id="textbookZh"></div>
+          <div class="textbook-empty hidden" id="textbookEmpty">
+            暂未收录本单元教材原文。
+            <a id="textbookSearch" href="#" target="_blank" rel="noopener">搜索教材原文</a>
+          </div>
+        </div>
+
+        <div class="passage-card">
+          <div class="passage-top">
+            <span class="passage-badge">🎧 轻快朗读</span>
+            <span class="passage-progress" id="passageProgress">0 / 0 句</span>
+          </div>
+          <h3 class="passage-heading">课文正文</h3>
+          <p class="passage-note">以下为本单元主题跟读短文，可在数据文件中替换为教材原文。</p>
+          <div class="passage-body" id="passageBody"></div>
+          <div class="passage-zh hidden" id="passageZh"></div>
+          <div class="passage-examples">
+            <h4>本单元例句</h4>
+            <div id="passageExamples"></div>
+          </div>
+          <div class="passage-tip">💡 小技巧：先听一句，再按 🎙️ 跟读；识别不可用时可以用录音回放。</div>
+        </div>
+      </section>
+
+      <section class="view" id="view-review" aria-labelledby="reviewTitle">
+        <div class="unit-head">
+          <div class="unit-heading">
+            <p class="eyebrow">记忆训练</p>
+            <h2 id="reviewTitle">今天记住，明天还记得</h2>
+            <p class="unit-sub">先主动回忆，再按 1 / 3 / 7 / 14 / 30 天安排复习。</p>
+          </div>
+          <div class="unit-actions">
+            <button class="btn primary" id="startReviewBtn" type="button"><span class="btn-icon">▶</span>开始一组</button>
+          </div>
+        </div>
+
+        <div class="review-stats">
+          <div class="review-stat"><span>今日待复习</span><b id="dueCount">0</b><small>个</small></div>
+          <div class="review-stat"><span>错词本</span><b id="wrongCount">0</b><small>个</small></div>
+          <div class="review-stat"><span>已自测</span><b id="reviewedCount">0</b><small>个</small></div>
+        </div>
+
+        <div class="review-toolbar">
+          <div>
+            <span class="setting-label">自测方式</span>
+            <div class="chip-row" id="reviewModeChips">
+              <button class="style-chip active" type="button" data-mode="listening">听音选义</button>
+              <button class="style-chip" type="button" data-mode="choice">看词选义</button>
+              <button class="style-chip" type="button" data-mode="spelling">看义拼写</button>
+            </div>
+          </div>
+          <button class="btn ghost small" id="reviewWrongBtn" type="button">只复习错词</button>
+        </div>
+
+        <div class="quiz-card hidden" id="quizCard">
+          <div class="quiz-top">
+            <span id="quizProgress">1 / 10</span>
+            <span id="quizScore">0 分</span>
+          </div>
+          <div class="quiz-question">
+            <p class="quiz-mode" id="quizModeLabel">听音选义</p>
+            <h3 id="quizPrompt">classmate</h3>
+            <p class="ipa" id="quizIpa"></p>
+            <button class="btn soft small hidden" id="quizAudio" type="button">🔊 听发音</button>
+          </div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-spelling hidden" id="quizSpelling">
+            <input id="quizInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入英文单词">
+            <button class="btn primary" id="quizSubmit" type="button">提交</button>
+          </div>
+          <div class="quiz-feedback hidden" id="quizFeedback"></div>
+          <div class="quiz-actions">
+            <button class="btn primary hidden" id="quizNext" type="button">下一题</button>
+          </div>
+        </div>
+
+        <div class="memory-tips">
+          <h3>为什么这样记更牢？</h3>
+          <div class="tip-grid">
+            <div class="tip-item"><b>主动回忆</b><p>先想再看答案，比反复读更能加深记忆。</p></div>
+            <div class="tip-item"><b>间隔复习</b><p>在快要忘记时再复习一次，间隔逐渐拉长。</p></div>
+            <div class="tip-item"><b>语境 + 跟读</b><p>把词放进例句，再大声读出来，声音和场景都是线索。</p></div>
+            <div class="tip-item"><b>少量多次</b><p>每天 10 分钟，比一次背一小时更稳。</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-checkin" aria-labelledby="checkinTitle">
+        <div class="checkin-hero">
+          <div class="hero-left">
+            <p class="eyebrow">每日打卡</p>
+            <h2 id="checkinTitle">今天也来读几个词吧</h2>
+            <p class="today-line" id="todayLine">—</p>
+            <button class="btn primary big" id="checkinBtn" type="button"><span class="btn-icon">✓</span>今日打卡</button>
+          </div>
+          <div class="hero-right">
+            <div class="streak-big"><b id="streakBig">0</b><span>天连续</span></div>
+            <p class="hero-hint" id="checkinHint">连续打卡，积累语感</p>
+          </div>
+        </div>
+
+        <div class="daily-card">
+          <div class="daily-top"><span>今日学习目标</span><b id="dailyGoalText">0 / 10 个词</b></div>
+          <div class="progress-track"><i id="dailyGoalBar"></i></div>
+          <p class="daily-hint" id="dailyGoalHint">去单词页标记已学，或到复习页自测，达到目标后即可打卡。</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat"><span>连续打卡</span><b id="statStreak">0</b><small>天</small></div>
+          <div class="stat"><span>累计打卡</span><b id="statTotal">0</b><small>天</small></div>
+          <div class="stat"><span>已学单词</span><b id="statWords">0</b><small>个</small></div>
+          <div class="stat"><span>完成单元</span><b id="statUnits">0</b><small>个</small></div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="calendar-head">
+            <h3 id="calendarTitle">—</h3>
+            <div class="calendar-nav">
+              <button class="icon-btn small" id="calPrev" type="button" aria-label="上个月">‹</button>
+              <button class="icon-btn small" id="calNext" type="button" aria-label="下个月">›</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="calendar-legend"><span class="legend-dot on"></span>已打卡<span class="legend-dot"></span>未打卡</div>
+        </div>
+
+        <div class="badges-card">
+          <h3>小小里程碑</h3>
+          <div class="badges" id="badges"></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings" aria-labelledby="settingsTitle">
+        <div class="settings-head">
+          <button class="btn ghost small" id="settingsBack" type="button">← 返回</button>
+          <div>
+            <p class="eyebrow">设置</p>
+            <h2 id="settingsTitle">让学习更顺手</h2>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <div class="settings-section">
+            <h3>显示与布局</h3>
+            <div class="setting-group row">
+              <div><span class="setting-label">紧凑布局</span><p class="setting-hint">减少留白，一屏看到更多单词</p></div>
+              <label class="switch"><input type="checkbox" id="layoutToggle" aria-label="紧凑布局"><span></span></label>
+            </div>
+            <div class="setting-group row">
+              <div><span class="setting-label">显示例句翻译</span><p class="setting-hint">例句下方显示中文意思</p></div>
+              <label class="switch"><input type="checkbox" id="zhToggle" aria-label="显示例句翻译"><span></span></label>
+            </div>
+            <div class="setting-group row">
+              <div><span class="setting-label">显示词形变化</span><p class="setting-hint">动词过去式、名词复数、形容词比较级等（规则生成，供参考）</p></div>
+              <label class="switch"><input type="checkbox" id="formsToggle" aria-label="显示词形变化"><span></span></label>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">字体大小</span>
+              <div class="chip-row" id="fontSizeChips">
+                <button class="style-chip" type="button" data-size="small">小</button>
+                <button class="style-chip active" type="button" data-size="medium">中</button>
+                <button class="style-chip" type="button" data-size="large">大</button>
+              </div>
+              <p class="setting-hint">默认中号；小号适合一屏看更多词，大号适合看得更清楚。</p>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>朗读声音</h3>
+            <div class="setting-group">
+              <label for="voiceSelect">英语声音</label>
+              <div class="voice-row">
+                <select id="voiceSelect"></select>
+                <button class="btn soft small" id="voicePreview" type="button">试听</button>
+              </div>
+              <p class="setting-hint" id="voiceHint">推荐使用 Edge / Chrome，并选择带 Natural 或 Neural 的英语声音，朗读会更自然、更轻松。</p>
+            </div>
+            <div class="setting-group">
+              <span class="setting-label">朗读风格</span>
+              <div class="chip-row" id="styleChips"></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>自动播放</h3>
+            <div class="setting-group">
+              <label for="playScopeSelect">播放范围</label>
+              <div class="voice-row">
+                <select id="playScopeSelect">
+                  <option value="unit">当前单元</option>
+                  <option value="book">当前册（自动跨单元）</option>
+                  <option value="stage">当前学段（自动跨册）</option>
+                </select>
+              </div>
+              <p class="setting-hint">选“当前册”会在本单元读完后自动接着下一个单元；选“当前学段”会跨册连续播放。</p>
+            </div>
+            <div class="setting-group">
+              <label for="gapRange">自动播放间隔</label>
+              <input type="range" id="gapRange" min="400" max="2000" step="100" value="900">
+              <div class="range-labels"><span>紧凑</span><span id="gapLabel">900ms</span><span>舒缓</span></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <h3>跟读与复习</h3>
+            <div class="setting-group row">
+              <div><span class="setting-label">跟读评分</span><p class="setting-hint">朗读后显示识别结果与分数</p></div>
+              <label class="switch"><input type="checkbox" id="scoreToggle" aria-label="跟读评分"><span></span></label>
+            </div>
+            <div class="setting-group">
+              <label for="dailyGoalSelect">每日学习目标</label>
+              <div class="voice-row">
+                <select id="dailyGoalSelect">
+                  <option value="5">5 个词</option>
+                  <option value="10">10 个词</option>
+                  <option value="15">15 个词</option>
+                  <option value="20">20 个词</option>
+                  <option value="30">30 个词</option>
+                </select>
+              </div>
+              <p class="setting-hint">当天学习或复习达到目标词数后，打卡按钮才会启用。</p>
+            </div>
+            <p class="setting-hint review-note">复习采用间隔重复：答对后间隔变为 1、3、7、14、30 天；答错会回到短间隔，并进入错词本。</p>
+          </div>
+
+          <div class="settings-section">
+            <h3>数据</h3>
+            <p class="setting-hint" id="dataSummary">词库加载中…</p>
+            <div class="settings-footer">
+              <button class="btn ghost danger" id="resetBtn" type="button">重置学习记录</button>
+              <span class="about">英词通 v1.3 · 作者 安得半日闲</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>英词通 · 作者 安得半日闲</p>
+      <p>词库范围：外研版新标准（初中 6 册）/ 外研版新标准 2019（高中必修 + 选择性必修 7 册）</p>
+    </footer>
+  </div>
+
+  <div class="player" id="player" aria-hidden="true">
+    <div class="player-info">
+      <div class="eq" id="playerEq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="player-text">
+        <p class="player-word" id="playerWord">—</p>
+        <p class="player-meta" id="playerMeta">—</p>
+      </div>
+    </div>
+    <div class="player-controls">
+      <button class="player-btn" id="playerPrev" type="button" title="上一个" aria-label="上一个">⏮</button>
+      <button class="player-btn main" id="playerToggle" type="button" title="播放或暂停" aria-label="播放或暂停">▶</button>
+      <button class="player-btn" id="playerNext" type="button" title="下一个" aria-label="下一个">⏭</button>
+      <button class="player-btn" id="playerLoop" type="button" title="循环播放" aria-label="循环播放">🔁</button>
+    </div>
+    <div class="player-extra">
+      <select id="playerScope" aria-label="播放范围">
+        <option value="unit">本单元</option>
+        <option value="book">整册连播</option>
+        <option value="stage">学段连播</option>
+      </select>
+      <button class="player-btn" id="playerClose" type="button" title="关闭" aria-label="关闭播放条">×</button>
+    </div>
+    <div class="player-progress"><i id="playerProgressBar"></i></div>
+  </div>
+
+  <div class="modal" id="shadowModal" aria-hidden="true">
+    <div class="modal-card shadow-card" role="dialog" aria-modal="true" aria-labelledby="shadowTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">跟读练习</p>
+          <h3 id="shadowTitle">classmate</h3>
+        </div>
+        <button class="icon-btn" type="button" data-close="shadowModal" aria-label="关闭跟读">×</button>
+      </div>
+
+      <div class="shadow-main">
+        <div class="shadow-icon" id="shadowIcon">👥</div>
+        <p class="ipa" id="shadowIpa">/ˈklɑːsmeɪt/</p>
+        <p class="shadow-meaning" id="shadowMeaning">同班同学</p>
+        <div class="shadow-text hidden" id="shadowText"></div>
+      </div>
+
+      <div class="shadow-targets" id="shadowTargets"></div>
+
+      <div class="shadow-prompt" id="shadowPrompt">点击下面的按钮，大声读出来</div>
+
+      <div class="shadow-result hidden" id="shadowResult">
+        <div class="score-ring"><b id="shadowScore">0</b><small>分</small></div>
+        <p class="heard" id="shadowHeard"></p>
+        <p class="shadow-tip" id="shadowTip"></p>
+      </div>
+
+      <div class="shadow-playback hidden" id="shadowPlayback"></div>
+      <p class="shadow-hint">识别服务不可用时，可以用录音回放练习跟读。</p>
+
+      <div class="shadow-footer">
+        <button class="btn soft small" id="shadowListen" type="button">🔊 先听一遍</button>
+        <button class="btn ghost small" id="shadowRecord" type="button">🎙️ 录音回放</button>
+        <button class="btn ghost small" id="shadowDone" type="button">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="confetti-layer" id="confetti" aria-hidden="true"></div>
+
+  <script src="js/data-junior-a.js"></script>
+  <script src="js/data-junior-b.js"></script>
+  <script src="js/data-junior-c.js"></script>
+  <script src="js/data-senior.js"></script>
+  <script src="js/data-senior-b.js"></script>
+  <script src="js/extra-junior-a.js"></script>
+  <script src="js/extra-junior-b.js"></script>
+  <script src="js/extra-junior-c.js"></script>
+  <script src="js/extra-senior-a.js"></script>
+  <script src="js/extra-senior-b.js"></script>
+  <script src="js/extra-senior-c.js"></script>
+  <script src="js/examples-junior-a.js"></script>
+  <script src="js/examples-junior-b.js"></script>
+  <script src="js/examples-junior-c.js"></script>
+  <script src="js/examples-senior-a1.js"></script>
+  <script src="js/examples-senior-a2.js"></script>
+  <script src="js/examples-senior-b.js"></script>
+  <script src="js/examples-senior-c.js"></script>
+  <script src="js/icons-junior-a.js"></script>
+  <script src="js/icons-junior-b.js"></script>
+  <script src="js/icons-junior-c.js"></script>
+  <script src="js/icons-senior-a1.js"></script>
+  <script src="js/icons-senior-a2.js"></script>
+  <script src="js/icons-senior-b.js"></script>
+  <script src="js/icons-senior-c.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
