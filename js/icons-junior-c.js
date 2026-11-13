@@ -1,0 +1,485 @@
+/* 外研版九年级上册 / 下册 扩展词汇逐词语义图标
+ * 键格式："bookId/unitId/word"，与 extra-junior-c.js 完全一致
+ */
+window.YCT_WORD_ICONS = window.YCT_WORD_ICONS || {};
+
+/* ===== 九年级上册 ===== */
+
+/* j9a m1 Wonders of the world */
+window.YCT_WORD_ICONS["j9a/m1/man-made"] = "🏗️";
+window.YCT_WORD_ICONS["j9a/m1/discussion"] = "💬";
+window.YCT_WORD_ICONS["j9a/m1/eastern"] = "🌅";
+window.YCT_WORD_ICONS["j9a/m1/though"] = "🔀";
+window.YCT_WORD_ICONS["j9a/m1/loud"] = "🔊";
+window.YCT_WORD_ICONS["j9a/m1/wow"] = "😲";
+window.YCT_WORD_ICONS["j9a/m1/opinion"] = "💭";
+window.YCT_WORD_ICONS["j9a/m1/electricity"] = "⚡";
+window.YCT_WORD_ICONS["j9a/m1/below"] = "⬇️";
+window.YCT_WORD_ICONS["j9a/m1/shine"] = "☀️";
+window.YCT_WORD_ICONS["j9a/m1/sign"] = "🪧";
+window.YCT_WORD_ICONS["j9a/m1/silent"] = "🤫";
+window.YCT_WORD_ICONS["j9a/m1/silver"] = "🥈";
+window.YCT_WORD_ICONS["j9a/m1/sky"] = "🌌";
+window.YCT_WORD_ICONS["j9a/m1/grey"] = "🌫️";
+window.YCT_WORD_ICONS["j9a/m1/beside"] = "↔️";
+window.YCT_WORD_ICONS["j9a/m1/reply"] = "📩";
+window.YCT_WORD_ICONS["j9a/m1/clear"] = "🌤️";
+window.YCT_WORD_ICONS["j9a/m1/stream"] = "💧";
+window.YCT_WORD_ICONS["j9a/m1/nearly"] = "🔜";
+window.YCT_WORD_ICONS["j9a/m1/canyon"] = "🏞️";
+window.YCT_WORD_ICONS["j9a/m1/remain"] = "⏸️";
+window.YCT_WORD_ICONS["j9a/m1/million"] = "💰";
+
+/* j9a m2 Public holidays */
+window.YCT_WORD_ICONS["j9a/m2/found"] = "🏛️";
+window.YCT_WORD_ICONS["j9a/m2/flag"] = "🚩";
+window.YCT_WORD_ICONS["j9a/m2/until"] = "⏳";
+window.YCT_WORD_ICONS["j9a/m2/off"] = "🆓";
+window.YCT_WORD_ICONS["j9a/m2/vacation"] = "🏖️";
+window.YCT_WORD_ICONS["j9a/m2/season"] = "🍂";
+window.YCT_WORD_ICONS["j9a/m2/kid"] = "🧒";
+window.YCT_WORD_ICONS["j9a/m2/band"] = "🥁";
+window.YCT_WORD_ICONS["j9a/m2/UK"] = "🎡";
+window.YCT_WORD_ICONS["j9a/m2/fourth"] = "4️⃣";
+window.YCT_WORD_ICONS["j9a/m2/sixth"] = "6️⃣";
+window.YCT_WORD_ICONS["j9a/m2/seventh"] = "7️⃣";
+window.YCT_WORD_ICONS["j9a/m2/eighth"] = "8️⃣";
+window.YCT_WORD_ICONS["j9a/m2/ninth"] = "9️⃣";
+window.YCT_WORD_ICONS["j9a/m2/tenth"] = "🔟";
+window.YCT_WORD_ICONS["j9a/m2/twelfth"] = "🕛";
+window.YCT_WORD_ICONS["j9a/m2/twentieth"] = "🎂";
+window.YCT_WORD_ICONS["j9a/m2/among"] = "👥";
+window.YCT_WORD_ICONS["j9a/m2/speech"] = "🎤";
+window.YCT_WORD_ICONS["j9a/m2/pioneer"] = "🪓";
+window.YCT_WORD_ICONS["j9a/m2/grow"] = "🌱";
+window.YCT_WORD_ICONS["j9a/m2/corn"] = "🌽";
+window.YCT_WORD_ICONS["j9a/m2/following"] = "⏭️";
+window.YCT_WORD_ICONS["j9a/m2/lay"] = "🍽️";
+window.YCT_WORD_ICONS["j9a/m2/over"] = "🔚";
+window.YCT_WORD_ICONS["j9a/m2/dish"] = "🍛";
+window.YCT_WORD_ICONS["j9a/m2/parade"] = "🎉";
+window.YCT_WORD_ICONS["j9a/m2/ourselves"] = "🪞";
+
+/* j9a m3 Heroes */
+window.YCT_WORD_ICONS["j9a/m3/including"] = "📦";
+window.YCT_WORD_ICONS["j9a/m3/medal"] = "🏅";
+window.YCT_WORD_ICONS["j9a/m3/attend"] = "🙋";
+window.YCT_WORD_ICONS["j9a/m3/abroad"] = "✈️";
+window.YCT_WORD_ICONS["j9a/m3/doctor"] = "🎓";
+window.YCT_WORD_ICONS["j9a/m3/degree"] = "🌡️";
+window.YCT_WORD_ICONS["j9a/m3/whatever"] = "❓";
+window.YCT_WORD_ICONS["j9a/m3/will"] = "💪";
+window.YCT_WORD_ICONS["j9a/m3/victory"] = "🏆";
+window.YCT_WORD_ICONS["j9a/m3/simply"] = "💯";
+window.YCT_WORD_ICONS["j9a/m3/Canadian"] = "🍁";
+window.YCT_WORD_ICONS["j9a/m3/sick"] = "🤒";
+window.YCT_WORD_ICONS["j9a/m3/treat"] = "💊";
+window.YCT_WORD_ICONS["j9a/m3/war"] = "⚔️";
+window.YCT_WORD_ICONS["j9a/m3/wound"] = "🩹";
+window.YCT_WORD_ICONS["j9a/m3/wounded"] = "🩼";
+window.YCT_WORD_ICONS["j9a/m3/realise"] = "🤯";
+window.YCT_WORD_ICONS["j9a/m3/dying"] = "🥀";
+window.YCT_WORD_ICONS["j9a/m3/care"] = "🫶";
+window.YCT_WORD_ICONS["j9a/m3/tool"] = "🔧";
+window.YCT_WORD_ICONS["j9a/m3/invention"] = "⚙️";
+window.YCT_WORD_ICONS["j9a/m3/useful"] = "👍";
+window.YCT_WORD_ICONS["j9a/m3/rest"] = "😴";
+window.YCT_WORD_ICONS["j9a/m3/himself"] = "👤";
+window.YCT_WORD_ICONS["j9a/m3/manage"] = "🧗";
+window.YCT_WORD_ICONS["j9a/m3/operation"] = "🏥";
+window.YCT_WORD_ICONS["j9a/m3/continue"] = "➡️";
+window.YCT_WORD_ICONS["j9a/m3/Canada"] = "🦫";
+
+/* j9a m4 Home alone */
+window.YCT_WORD_ICONS["j9a/m4/platform"] = "🚉";
+window.YCT_WORD_ICONS["j9a/m4/meeting"] = "🗓️";
+window.YCT_WORD_ICONS["j9a/m4/miss"] = "❌";
+window.YCT_WORD_ICONS["j9a/m4/shut"] = "🚪";
+window.YCT_WORD_ICONS["j9a/m4/lock"] = "🔒";
+window.YCT_WORD_ICONS["j9a/m4/simple"] = "🍰";
+window.YCT_WORD_ICONS["j9a/m4/anybody"] = "❔";
+window.YCT_WORD_ICONS["j9a/m4/clock"] = "🕰️";
+window.YCT_WORD_ICONS["j9a/m4/ring"] = "🔔";
+window.YCT_WORD_ICONS["j9a/m4/passenger"] = "🧳";
+window.YCT_WORD_ICONS["j9a/m4/address"] = "🏠";
+window.YCT_WORD_ICONS["j9a/m4/text"] = "📄";
+window.YCT_WORD_ICONS["j9a/m4/couple"] = "👫";
+window.YCT_WORD_ICONS["j9a/m4/actually"] = "ℹ️";
+window.YCT_WORD_ICONS["j9a/m4/manage"] = "🗂️";
+window.YCT_WORD_ICONS["j9a/m4/unhappy"] = "😞";
+window.YCT_WORD_ICONS["j9a/m4/order"] = "📢";
+window.YCT_WORD_ICONS["j9a/m4/business"] = "💼";
+window.YCT_WORD_ICONS["j9a/m4/sofa"] = "🛋️";
+window.YCT_WORD_ICONS["j9a/m4/snack"] = "🍿";
+window.YCT_WORD_ICONS["j9a/m4/midnight"] = "🌙";
+window.YCT_WORD_ICONS["j9a/m4/empty"] = "🫙";
+window.YCT_WORD_ICONS["j9a/m4/unable"] = "🚫";
+window.YCT_WORD_ICONS["j9a/m4/burn"] = "🔥";
+window.YCT_WORD_ICONS["j9a/m4/cup"] = "☕";
+window.YCT_WORD_ICONS["j9a/m4/task"] = "📋";
+
+/* j9a m5 Museums */
+window.YCT_WORD_ICONS["j9a/m5/upstairs"] = "⬆️";
+window.YCT_WORD_ICONS["j9a/m5/exhibition"] = "🖼️";
+window.YCT_WORD_ICONS["j9a/m5/rule"] = "📏";
+window.YCT_WORD_ICONS["j9a/m5/tail"] = "🐕";
+window.YCT_WORD_ICONS["j9a/m5/rope"] = "🪢";
+window.YCT_WORD_ICONS["j9a/m5/entry"] = "🎟️";
+window.YCT_WORD_ICONS["j9a/m5/missing"] = "🔍";
+window.YCT_WORD_ICONS["j9a/m5/downstairs"] = "🔽";
+window.YCT_WORD_ICONS["j9a/m5/punish"] = "⛓️";
+window.YCT_WORD_ICONS["j9a/m5/communications"] = "📡";
+window.YCT_WORD_ICONS["j9a/m5/physics"] = "⚛️";
+window.YCT_WORD_ICONS["j9a/m5/chemistry"] = "🧪";
+window.YCT_WORD_ICONS["j9a/m5/dig"] = "⛏️";
+window.YCT_WORD_ICONS["j9a/m5/coal"] = "🌑";
+window.YCT_WORD_ICONS["j9a/m5/energy"] = "🔋";
+window.YCT_WORD_ICONS["j9a/m5/X-ray"] = "🩻";
+window.YCT_WORD_ICONS["j9a/m5/experiment"] = "🔬";
+window.YCT_WORD_ICONS["j9a/m5/sand"] = "🏜️";
+window.YCT_WORD_ICONS["j9a/m5/control"] = "🎛️";
+window.YCT_WORD_ICONS["j9a/m5/truck"] = "🚚";
+window.YCT_WORD_ICONS["j9a/m5/wheel"] = "🛞";
+window.YCT_WORD_ICONS["j9a/m5/whole"] = "🌕";
+
+/* j9a m6 Problems */
+window.YCT_WORD_ICONS["j9a/m6/deal"] = "🤝";
+window.YCT_WORD_ICONS["j9a/m6/exam"] = "📝";
+window.YCT_WORD_ICONS["j9a/m6/fail"] = "📉";
+window.YCT_WORD_ICONS["j9a/m6/guitar"] = "🎸";
+window.YCT_WORD_ICONS["j9a/m6/instrument"] = "🎻";
+window.YCT_WORD_ICONS["j9a/m6/musical"] = "🎵";
+window.YCT_WORD_ICONS["j9a/m6/habit"] = "🪥";
+window.YCT_WORD_ICONS["j9a/m6/schoolwork"] = "📓";
+window.YCT_WORD_ICONS["j9a/m6/volunteer"] = "🦺";
+window.YCT_WORD_ICONS["j9a/m6/necessary"] = "📌";
+window.YCT_WORD_ICONS["j9a/m6/shame"] = "😕";
+window.YCT_WORD_ICONS["j9a/m6/instead"] = "🔄";
+window.YCT_WORD_ICONS["j9a/m6/community"] = "🏘️";
+window.YCT_WORD_ICONS["j9a/m6/knowledge"] = "🧠";
+window.YCT_WORD_ICONS["j9a/m6/point"] = "📍";
+window.YCT_WORD_ICONS["j9a/m6/consider"] = "🤔";
+window.YCT_WORD_ICONS["j9a/m6/reason"] = "🔎";
+window.YCT_WORD_ICONS["j9a/m6/angry"] = "😠";
+window.YCT_WORD_ICONS["j9a/m6/repair"] = "🔨";
+window.YCT_WORD_ICONS["j9a/m6/truth"] = "✔️";
+window.YCT_WORD_ICONS["j9a/m6/least"] = "🤏";
+window.YCT_WORD_ICONS["j9a/m6/honest"] = "😇";
+window.YCT_WORD_ICONS["j9a/m6/apologise"] = "🙇";
+window.YCT_WORD_ICONS["j9a/m6/bill"] = "🧾";
+
+/* j9a m7 Great books */
+window.YCT_WORD_ICONS["j9a/m7/discuss"] = "🗨️";
+window.YCT_WORD_ICONS["j9a/m7/thinker"] = "🦉";
+window.YCT_WORD_ICONS["j9a/m7/wise"] = "🧐";
+window.YCT_WORD_ICONS["j9a/m7/influence"] = "🧲";
+window.YCT_WORD_ICONS["j9a/m7/sense"] = "🧩";
+window.YCT_WORD_ICONS["j9a/m7/suppose"] = "🔮";
+window.YCT_WORD_ICONS["j9a/m7/well-known"] = "🌟";
+window.YCT_WORD_ICONS["j9a/m7/adventure"] = "🗺️";
+window.YCT_WORD_ICONS["j9a/m7/escape"] = "💨";
+window.YCT_WORD_ICONS["j9a/m7/cave"] = "🕳️";
+window.YCT_WORD_ICONS["j9a/m7/dead"] = "💀";
+window.YCT_WORD_ICONS["j9a/m7/neighbour"] = "🏡";
+window.YCT_WORD_ICONS["j9a/m7/funeral"] = "⚰️";
+window.YCT_WORD_ICONS["j9a/m7/surprised"] = "😮";
+window.YCT_WORD_ICONS["j9a/m7/alive"] = "💓";
+window.YCT_WORD_ICONS["j9a/m7/southern"] = "🌴";
+window.YCT_WORD_ICONS["j9a/m7/state"] = "🏙️";
+window.YCT_WORD_ICONS["j9a/m7/action"] = "🎬";
+window.YCT_WORD_ICONS["j9a/m7/everyday"] = "👕";
+window.YCT_WORD_ICONS["j9a/m7/dialogue"] = "🗣️";
+
+/* j9a m8 Sports life */
+window.YCT_WORD_ICONS["j9a/m8/memory"] = "🎞️";
+window.YCT_WORD_ICONS["j9a/m8/point"] = "📊";
+window.YCT_WORD_ICONS["j9a/m8/decision"] = "🗳️";
+window.YCT_WORD_ICONS["j9a/m8/excuse"] = "🤷";
+window.YCT_WORD_ICONS["j9a/m8/noon"] = "🌞";
+window.YCT_WORD_ICONS["j9a/m8/seat"] = "💺";
+window.YCT_WORD_ICONS["j9a/m8/fair"] = "⚖️";
+window.YCT_WORD_ICONS["j9a/m8/kick"] = "🦶";
+window.YCT_WORD_ICONS["j9a/m8/mad"] = "😡";
+window.YCT_WORD_ICONS["j9a/m8/sportsman"] = "🏋️";
+window.YCT_WORD_ICONS["j9a/m8/high jump"] = "🤸";
+window.YCT_WORD_ICONS["j9a/m8/ability"] = "🦾";
+window.YCT_WORD_ICONS["j9a/m8/hurdling"] = "🏃";
+window.YCT_WORD_ICONS["j9a/m8/sportswoman"] = "🤾";
+window.YCT_WORD_ICONS["j9a/m8/race"] = "🏁";
+window.YCT_WORD_ICONS["j9a/m8/record"] = "🥇";
+window.YCT_WORD_ICONS["j9a/m8/method"] = "🧰";
+window.YCT_WORD_ICONS["j9a/m8/hurdles"] = "🚧";
+window.YCT_WORD_ICONS["j9a/m8/Japan"] = "🗾";
+window.YCT_WORD_ICONS["j9a/m8/break"] = "💥";
+window.YCT_WORD_ICONS["j9a/m8/sportsperson"] = "🎽";
+window.YCT_WORD_ICONS["j9a/m8/Asian"] = "🌏";
+window.YCT_WORD_ICONS["j9a/m8/suffer"] = "😣";
+window.YCT_WORD_ICONS["j9a/m8/pride"] = "🦚";
+
+/* j9a m9 Great inventions */
+window.YCT_WORD_ICONS["j9a/m9/borrow"] = "📥";
+window.YCT_WORD_ICONS["j9a/m9/website"] = "🌐";
+window.YCT_WORD_ICONS["j9a/m9/mail"] = "📬";
+window.YCT_WORD_ICONS["j9a/m9/textbook"] = "📗";
+window.YCT_WORD_ICONS["j9a/m9/mainly"] = "🔝";
+window.YCT_WORD_ICONS["j9a/m9/page"] = "📃";
+window.YCT_WORD_ICONS["j9a/m9/electronic"] = "💻";
+window.YCT_WORD_ICONS["j9a/m9/powerful"] = "👑";
+window.YCT_WORD_ICONS["j9a/m9/memory"] = "💾";
+window.YCT_WORD_ICONS["j9a/m9/full"] = "🈵";
+window.YCT_WORD_ICONS["j9a/m9/fix"] = "🔩";
+window.YCT_WORD_ICONS["j9a/m9/instructions"] = "📖";
+window.YCT_WORD_ICONS["j9a/m9/lend"] = "📤";
+window.YCT_WORD_ICONS["j9a/m9/properly"] = "☑️";
+window.YCT_WORD_ICONS["j9a/m9/printing"] = "🖨️";
+window.YCT_WORD_ICONS["j9a/m9/development"] = "📈";
+window.YCT_WORD_ICONS["j9a/m9/trade"] = "💱";
+window.YCT_WORD_ICONS["j9a/m9/result"] = "🧮";
+window.YCT_WORD_ICONS["j9a/m9/spread"] = "🌬️";
+window.YCT_WORD_ICONS["j9a/m9/introduction"] = "🆕";
+window.YCT_WORD_ICONS["j9a/m9/amount"] = "🔢";
+window.YCT_WORD_ICONS["j9a/m9/store"] = "🗄️";
+window.YCT_WORD_ICONS["j9a/m9/varied"] = "🌈";
+window.YCT_WORD_ICONS["j9a/m9/form"] = "🔣";
+window.YCT_WORD_ICONS["j9a/m9/connection"] = "📶";
+window.YCT_WORD_ICONS["j9a/m9/single"] = "1️⃣";
+window.YCT_WORD_ICONS["j9a/m9/direction"] = "↗️";
+window.YCT_WORD_ICONS["j9a/m9/replace"] = "🔃";
+
+/* j9a m10 Australia */
+window.YCT_WORD_ICONS["j9a/m10/central"] = "🔘";
+window.YCT_WORD_ICONS["j9a/m10/magical"] = "✨";
+window.YCT_WORD_ICONS["j9a/m10/height"] = "🗼";
+window.YCT_WORD_ICONS["j9a/m10/sailing boat"] = "⛵";
+window.YCT_WORD_ICONS["j9a/m10/northeast"] = "🧭";
+window.YCT_WORD_ICONS["j9a/m10/sheep"] = "🐑";
+window.YCT_WORD_ICONS["j9a/m10/hat"] = "👒";
+window.YCT_WORD_ICONS["j9a/m10/keep"] = "🛡️";
+window.YCT_WORD_ICONS["j9a/m10/fly"] = "🪰";
+window.YCT_WORD_ICONS["j9a/m10/scissors"] = "✂️";
+window.YCT_WORD_ICONS["j9a/m10/wool"] = "🧶";
+window.YCT_WORD_ICONS["j9a/m10/diary"] = "📔";
+window.YCT_WORD_ICONS["j9a/m10/hate"] = "😖";
+window.YCT_WORD_ICONS["j9a/m10/ant"] = "🐜";
+window.YCT_WORD_ICONS["j9a/m10/brush"] = "🧹";
+window.YCT_WORD_ICONS["j9a/m10/period"] = "📆";
+window.YCT_WORD_ICONS["j9a/m10/spirit"] = "🧚";
+window.YCT_WORD_ICONS["j9a/m10/relationship"] = "🫂";
+window.YCT_WORD_ICONS["j9a/m10/relative"] = "👪";
+window.YCT_WORD_ICONS["j9a/m10/ham"] = "🥓";
+window.YCT_WORD_ICONS["j9a/m10/salad"] = "🥗";
+window.YCT_WORD_ICONS["j9a/m10/grape"] = "🍇";
+window.YCT_WORD_ICONS["j9a/m10/surf"] = "🏄";
+window.YCT_WORD_ICONS["j9a/m10/riding"] = "🏇";
+window.YCT_WORD_ICONS["j9a/m10/lazy"] = "🦥";
+window.YCT_WORD_ICONS["j9a/m10/ride"] = "🐎";
+
+/* j9a m11 Photos */
+window.YCT_WORD_ICONS["j9a/m11/bet"] = "🎰";
+window.YCT_WORD_ICONS["j9a/m11/general"] = "🌍";
+window.YCT_WORD_ICONS["j9a/m11/standard"] = "📐";
+window.YCT_WORD_ICONS["j9a/m11/feeling"] = "💗";
+window.YCT_WORD_ICONS["j9a/m11/difficulty"] = "🧱";
+window.YCT_WORD_ICONS["j9a/m11/subject"] = "🏷️";
+window.YCT_WORD_ICONS["j9a/m11/add"] = "➕";
+window.YCT_WORD_ICONS["j9a/m11/recently"] = "⏪";
+window.YCT_WORD_ICONS["j9a/m11/menu"] = "📜";
+window.YCT_WORD_ICONS["j9a/m11/tonight"] = "🌃";
+window.YCT_WORD_ICONS["j9a/m11/winner"] = "🥳";
+window.YCT_WORD_ICONS["j9a/m11/rush"] = "⏩";
+window.YCT_WORD_ICONS["j9a/m11/blouse"] = "👚";
+window.YCT_WORD_ICONS["j9a/m11/skirt"] = "👗";
+window.YCT_WORD_ICONS["j9a/m11/singer"] = "🎙️";
+window.YCT_WORD_ICONS["j9a/m11/congratulations"] = "🎊";
+window.YCT_WORD_ICONS["j9a/m11/headmaster"] = "🎩";
+window.YCT_WORD_ICONS["j9a/m11/present"] = "🎁";
+
+/* j9a m12 Save our world */
+window.YCT_WORD_ICONS["j9a/m12/factory"] = "🏭";
+window.YCT_WORD_ICONS["j9a/m12/pollute"] = "☣️";
+window.YCT_WORD_ICONS["j9a/m12/waste"] = "🗑️";
+window.YCT_WORD_ICONS["j9a/m12/enemy"] = "👿";
+window.YCT_WORD_ICONS["j9a/m12/crop"] = "🌾";
+window.YCT_WORD_ICONS["j9a/m12/kill"] = "🗡️";
+window.YCT_WORD_ICONS["j9a/m12/oil"] = "🛢️";
+window.YCT_WORD_ICONS["j9a/m12/less"] = "➖";
+window.YCT_WORD_ICONS["j9a/m12/hopeless"] = "🪫";
+window.YCT_WORD_ICONS["j9a/m12/china"] = "🏺";
+window.YCT_WORD_ICONS["j9a/m12/divide"] = "➗";
+window.YCT_WORD_ICONS["j9a/m12/plastic"] = "🛍️";
+window.YCT_WORD_ICONS["j9a/m12/policy"] = "📑";
+window.YCT_WORD_ICONS["j9a/m12/reuse"] = "🔂";
+window.YCT_WORD_ICONS["j9a/m12/bottle"] = "🧴";
+window.YCT_WORD_ICONS["j9a/m12/repeat"] = "🔁";
+window.YCT_WORD_ICONS["j9a/m12/reduce"] = "🔻";
+window.YCT_WORD_ICONS["j9a/m12/cloth"] = "🧵";
+window.YCT_WORD_ICONS["j9a/m12/ton"] = "🐘";
+window.YCT_WORD_ICONS["j9a/m12/rubber"] = "🧤";
+window.YCT_WORD_ICONS["j9a/m12/recycling"] = "♻️";
+window.YCT_WORD_ICONS["j9a/m12/rapid"] = "🚀";
+window.YCT_WORD_ICONS["j9a/m12/step"] = "👣";
+window.YCT_WORD_ICONS["j9a/m12/grandson"] = "👦";
+window.YCT_WORD_ICONS["j9a/m12/granddaughter"] = "👧";
+
+/* ===== 九年级下册 ===== */
+
+/* j9b m1 Travel */
+window.YCT_WORD_ICONS["j9b/m1/flight"] = "🛩️";
+window.YCT_WORD_ICONS["j9b/m1/because of"] = "🔗";
+window.YCT_WORD_ICONS["j9b/m1/direct"] = "🛤️";
+window.YCT_WORD_ICONS["j9b/m1/pilot"] = "🕹️";
+window.YCT_WORD_ICONS["j9b/m1/succeed"] = "🙌";
+window.YCT_WORD_ICONS["j9b/m1/as long as"] = "🔑";
+window.YCT_WORD_ICONS["j9b/m1/school-leaver"] = "🎒";
+window.YCT_WORD_ICONS["j9b/m1/exactly"] = "🎯";
+window.YCT_WORD_ICONS["j9b/m1/take care"] = "🤗";
+window.YCT_WORD_ICONS["j9b/m1/sir"] = "🫡";
+window.YCT_WORD_ICONS["j9b/m1/officer"] = "👮";
+window.YCT_WORD_ICONS["j9b/m1/stupid"] = "🤦";
+window.YCT_WORD_ICONS["j9b/m1/take off"] = "🛫";
+window.YCT_WORD_ICONS["j9b/m1/jacket"] = "🧥";
+window.YCT_WORD_ICONS["j9b/m1/coach"] = "🚌";
+
+/* j9b m2 Education */
+window.YCT_WORD_ICONS["j9b/m2/ours"] = "👐";
+window.YCT_WORD_ICONS["j9b/m2/tie"] = "👔";
+window.YCT_WORD_ICONS["j9b/m2/row"] = "🪑";
+window.YCT_WORD_ICONS["j9b/m2/pool"] = "🏊";
+window.YCT_WORD_ICONS["j9b/m2/pass"] = "🈴";
+window.YCT_WORD_ICONS["j9b/m2/secondary"] = "2️⃣";
+window.YCT_WORD_ICONS["j9b/m2/secondary school"] = "🏫";
+window.YCT_WORD_ICONS["j9b/m2/absent"] = "🙅";
+window.YCT_WORD_ICONS["j9b/m2/bell"] = "🛎️";
+window.YCT_WORD_ICONS["j9b/m2/primary"] = "🐣";
+window.YCT_WORD_ICONS["j9b/m2/sit in rows"] = "🧍";
+window.YCT_WORD_ICONS["j9b/m2/sports ground"] = "🏟️";
+window.YCT_WORD_ICONS["j9b/m2/have a break"] = "🧘";
+window.YCT_WORD_ICONS["j9b/m2/do well in"] = "🅰️";
+window.YCT_WORD_ICONS["j9b/m2/ask for advice"] = "💁";
+window.YCT_WORD_ICONS["j9b/m2/teach oneself"] = "🖥️";
+window.YCT_WORD_ICONS["j9b/m2/above all"] = "‼️";
+window.YCT_WORD_ICONS["j9b/m2/to one's surprise"] = "🫢";
+
+/* j9b m3 Life now and then */
+window.YCT_WORD_ICONS["j9b/m3/wealthy"] = "💎";
+window.YCT_WORD_ICONS["j9b/m3/fear"] = "😨";
+window.YCT_WORD_ICONS["j9b/m3/used to"] = "🔙";
+window.YCT_WORD_ICONS["j9b/m3/wealth"] = "🪙";
+window.YCT_WORD_ICONS["j9b/m3/double"] = "✖️";
+window.YCT_WORD_ICONS["j9b/m3/seldom"] = "🔕";
+window.YCT_WORD_ICONS["j9b/m3/spare"] = "⏲️";
+window.YCT_WORD_ICONS["j9b/m3/spare time"] = "🎮";
+window.YCT_WORD_ICONS["j9b/m3/speak up"] = "📣";
+window.YCT_WORD_ICONS["j9b/m3/deaf"] = "🦻";
+window.YCT_WORD_ICONS["j9b/m3/tiny"] = "🪶";
+window.YCT_WORD_ICONS["j9b/m3/electric"] = "🔌";
+window.YCT_WORD_ICONS["j9b/m3/light"] = "💡";
+window.YCT_WORD_ICONS["j9b/m3/candle"] = "🕯️";
+window.YCT_WORD_ICONS["j9b/m3/postman"] = "📮";
+window.YCT_WORD_ICONS["j9b/m3/cold"] = "🥶";
+window.YCT_WORD_ICONS["j9b/m3/heat"] = "🥵";
+window.YCT_WORD_ICONS["j9b/m3/full-time"] = "🏢";
+window.YCT_WORD_ICONS["j9b/m3/role"] = "🎭";
+window.YCT_WORD_ICONS["j9b/m3/transport"] = "🚇";
+
+/* j9b m4 Rules and suggestions */
+window.YCT_WORD_ICONS["j9b/m4/set off"] = "🥾";
+window.YCT_WORD_ICONS["j9b/m4/sock"] = "🧦";
+window.YCT_WORD_ICONS["j9b/m4/whenever"] = "⏰";
+window.YCT_WORD_ICONS["j9b/m4/proper"] = "👌";
+window.YCT_WORD_ICONS["j9b/m4/edge"] = "🪟";
+window.YCT_WORD_ICONS["j9b/m4/yourself"] = "🫵";
+window.YCT_WORD_ICONS["j9b/m4/starve"] = "🍞";
+window.YCT_WORD_ICONS["j9b/m4/go"] = "🎲";
+window.YCT_WORD_ICONS["j9b/m4/rock"] = "🪨";
+window.YCT_WORD_ICONS["j9b/m4/rock climbing"] = "⛰️";
+window.YCT_WORD_ICONS["j9b/m4/stone"] = "🗿";
+window.YCT_WORD_ICONS["j9b/m4/fairly"] = "🎚️";
+window.YCT_WORD_ICONS["j9b/m4/smooth"] = "🧈";
+window.YCT_WORD_ICONS["j9b/m4/straight"] = "🛣️";
+window.YCT_WORD_ICONS["j9b/m4/tent"] = "⛺";
+window.YCT_WORD_ICONS["j9b/m4/fall"] = "🍃";
+window.YCT_WORD_ICONS["j9b/m4/fall asleep"] = "💤";
+window.YCT_WORD_ICONS["j9b/m4/hang"] = "🪝";
+window.YCT_WORD_ICONS["j9b/m4/sudden"] = "🌩️";
+window.YCT_WORD_ICONS["j9b/m4/gun"] = "🔫";
+window.YCT_WORD_ICONS["j9b/m4/soft"] = "🧸";
+window.YCT_WORD_ICONS["j9b/m4/still"] = "🧊";
+window.YCT_WORD_ICONS["j9b/m4/wood"] = "🌳";
+window.YCT_WORD_ICONS["j9b/m4/blood"] = "🩸";
+
+/* j9b m5 Look after yourself */
+window.YCT_WORD_ICONS["j9b/m5/catch up"] = "👟";
+window.YCT_WORD_ICONS["j9b/m5/agreement"] = "🖊️";
+window.YCT_WORD_ICONS["j9b/m5/blind"] = "🦯";
+window.YCT_WORD_ICONS["j9b/m5/ouch"] = "🤕";
+window.YCT_WORD_ICONS["j9b/m5/call off"] = "⛔";
+window.YCT_WORD_ICONS["j9b/m5/thanks to"] = "🙏";
+window.YCT_WORD_ICONS["j9b/m5/health care"] = "🩺";
+window.YCT_WORD_ICONS["j9b/m5/expect"] = "👀";
+window.YCT_WORD_ICONS["j9b/m5/require"] = "🔖";
+window.YCT_WORD_ICONS["j9b/m5/physical"] = "🦴";
+window.YCT_WORD_ICONS["j9b/m5/effort"] = "💦";
+window.YCT_WORD_ICONS["j9b/m5/once in a while"] = "🌦️";
+window.YCT_WORD_ICONS["j9b/m5/harm"] = "⚠️";
+window.YCT_WORD_ICONS["j9b/m5/fall over"] = "😵";
+window.YCT_WORD_ICONS["j9b/m5/fall off"] = "🚲";
+
+/* j9b m6 Eating together */
+window.YCT_WORD_ICONS["j9b/m6/invitation"] = "💌";
+window.YCT_WORD_ICONS["j9b/m6/calendar"] = "📅";
+window.YCT_WORD_ICONS["j9b/m6/balloon"] = "🎈";
+window.YCT_WORD_ICONS["j9b/m6/paint"] = "🎨";
+window.YCT_WORD_ICONS["j9b/m6/heat"] = "♨️";
+window.YCT_WORD_ICONS["j9b/m6/heat up"] = "🍳";
+window.YCT_WORD_ICONS["j9b/m6/knife"] = "🔪";
+window.YCT_WORD_ICONS["j9b/m6/fork"] = "🍴";
+window.YCT_WORD_ICONS["j9b/m6/spoon"] = "🥄";
+window.YCT_WORD_ICONS["j9b/m6/cheeseburger"] = "🍔";
+window.YCT_WORD_ICONS["j9b/m6/Italian"] = "🍕";
+window.YCT_WORD_ICONS["j9b/m6/westerner"] = "🤠";
+window.YCT_WORD_ICONS["j9b/m6/west"] = "🌇";
+window.YCT_WORD_ICONS["j9b/m6/serve"] = "🍲";
+window.YCT_WORD_ICONS["j9b/m6/similar"] = "👯";
+window.YCT_WORD_ICONS["j9b/m6/wing"] = "🪽";
+window.YCT_WORD_ICONS["j9b/m6/lady"] = "👩";
+window.YCT_WORD_ICONS["j9b/m6/gentleman"] = "🤵";
+window.YCT_WORD_ICONS["j9b/m6/cross"] = "😤";
+window.YCT_WORD_ICONS["j9b/m6/help yourself"] = "🫲";
+
+/* j9b m7 English for you and me */
+window.YCT_WORD_ICONS["j9b/m7/achieve"] = "🎖️";
+window.YCT_WORD_ICONS["j9b/m7/including"] = "🧺";
+window.YCT_WORD_ICONS["j9b/m7/speaker"] = "🔉";
+window.YCT_WORD_ICONS["j9b/m7/boss"] = "🕴️";
+window.YCT_WORD_ICONS["j9b/m7/secretary"] = "⌨️";
+window.YCT_WORD_ICONS["j9b/m7/quarter"] = "⌚";
+window.YCT_WORD_ICONS["j9b/m7/industry"] = "💹";
+window.YCT_WORD_ICONS["j9b/m7/zero"] = "0️⃣";
+window.YCT_WORD_ICONS["j9b/m7/Indian"] = "🪷";
+window.YCT_WORD_ICONS["j9b/m7/type"] = "🗃️";
+window.YCT_WORD_ICONS["j9b/m7/English corner"] = "🔤";
+window.YCT_WORD_ICONS["j9b/m7/a quarter of"] = "🥧";
+window.YCT_WORD_ICONS["j9b/m7/three quarters"] = "🥛";
+window.YCT_WORD_ICONS["j9b/m7/get a good job"] = "🪪";
+window.YCT_WORD_ICONS["j9b/m7/be proud of"] = "🥹";
+window.YCT_WORD_ICONS["j9b/m7/make an effort"] = "🪜";
+window.YCT_WORD_ICONS["j9b/m7/keep trying"] = "⏫";
+window.YCT_WORD_ICONS["j9b/m7/work hard"] = "📚";
+
+/* j9b m8 My future life */
+window.YCT_WORD_ICONS["j9b/m8/handbag"] = "👜";
+window.YCT_WORD_ICONS["j9b/m8/beat"] = "🎶";
+window.YCT_WORD_ICONS["j9b/m8/pardon"] = "👂";
+window.YCT_WORD_ICONS["j9b/m8/intend"] = "✏️";
+window.YCT_WORD_ICONS["j9b/m8/fetch"] = "🫳";
+window.YCT_WORD_ICONS["j9b/m8/pancake"] = "🥞";
+window.YCT_WORD_ICONS["j9b/m8/rose"] = "🌹";
+window.YCT_WORD_ICONS["j9b/m8/laugh at"] = "😂";
+window.YCT_WORD_ICONS["j9b/m8/kindness"] = "💝";
+window.YCT_WORD_ICONS["j9b/m8/give up"] = "🏳️";
+window.YCT_WORD_ICONS["j9b/m8/try one's best"] = "⛽";
+window.YCT_WORD_ICONS["j9b/m8/disappointed"] = "😔";
+window.YCT_WORD_ICONS["j9b/m8/bedside"] = "🛏️";
+window.YCT_WORD_ICONS["j9b/m8/note"] = "🗒️";
+window.YCT_WORD_ICONS["j9b/m8/whom"] = "🕵️";
