@@ -1,0 +1,27 @@
+{
+  "name": "英词通 · 外研版词汇听读",
+  "short_name": "英词通",
+  "description": "外研版初中、高中英语词汇听读、跟读、间隔复习与每日打卡工具。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f3ea",
+  "theme_color": "#e8613c",
+  "categories": ["education", "books"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
