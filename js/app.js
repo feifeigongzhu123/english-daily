@@ -4,6 +4,8 @@
   const $ = (selector, root) => (root || document).querySelector(selector);
   const $$ = (selector, root) => Array.prototype.slice.call((root || document).querySelectorAll(selector));
 
+  const PUBLIC_URL = "https://feifeigongzhu123.github.io/english-daily/";
+
   const STORAGE = {
     settings: "yct.settings.v1",
     learned: "yct.learned.v1",
@@ -18,12 +20,17 @@
     gap: 900,
     layout: "compact",
     showZh: true,
-    scoring: true,
+    scoring: false,
     playScope: "unit",
     reviewMode: "listening",
     dailyGoal: 10,
     showForms: true,
-    fontSize: "medium"
+    fontSize: "medium",
+    wordMode: "meaning",
+    wordRepeat: 2,
+    spellLetters: false,
+    spellStyle: "standard",
+    keepAwake: true
   };
 
   const STYLES = {
@@ -228,6 +235,10 @@
   const wordList = $("#wordList");
   const autoPlayBtn = $("#autoPlayBtn");
   const markAllBtn = $("#markAllBtn");
+  const wordModeChips = $("#wordModeChips");
+  const wordRepeatSelect = $("#wordRepeatSelect");
+  const spellToggle = $("#spellToggle");
+  const spellStyleSelect = $("#spellStyleSelect");
 
   const passageTitle = $("#passageTitle");
   const passagePlayBtn = $("#passagePlayBtn");
@@ -236,6 +247,7 @@
   const textbookZh = $("#textbookZh");
   const textbookEmpty = $("#textbookEmpty");
   const textbookSearch = $("#textbookSearch");
+  const textbookSearchBing = $("#textbookSearchBing");
   const passageBody = $("#passageBody");
   const passageZh = $("#passageZh");
   const passageExamples = $("#passageExamples");
@@ -250,6 +262,18 @@
   const dailyGoalBar = $("#dailyGoalBar");
   const dailyGoalHint = $("#dailyGoalHint");
   const dailyGoalSelect = $("#dailyGoalSelect");
+  const shareText = $("#shareText");
+  const shareNative = $("#shareNative");
+  const copyShare = $("#copyShare");
+  const refreshShare = $("#refreshShare");
+  const downloadShare = $("#downloadShare");
+  const shareHint = $("#shareHint");
+  const sharePreviewLine = $("#sharePreviewLine");
+  const sharePreviewDate = $("#sharePreviewDate");
+  const sharePreviewStreak = $("#sharePreviewStreak");
+  const sharePreviewStudied = $("#sharePreviewStudied");
+  const sharePreviewReviewed = $("#sharePreviewReviewed");
+  const sharePreviewWord = $("#sharePreviewWord");
   const statStreak = $("#statStreak");
   const statTotal = $("#statTotal");
   const statWords = $("#statWords");
@@ -307,6 +331,7 @@
   const formsToggle = $("#formsToggle");
   const fontSizeChips = $("#fontSizeChips");
   const scoreToggle = $("#scoreToggle");
+  const keepAwakeToggle = $("#keepAwakeToggle");
   const resetBtn = $("#resetBtn");
   const dataSummary = $("#dataSummary");
 
@@ -363,11 +388,16 @@
   let textbookLines = [];
   let previewToken = 0;
   let toastTimer = null;
+  let shareTone = 0;
 
   const synth = window.speechSynthesis || null;
   const speechSupported = !!synth;
+  let allVoices = [];
   let voices = [];
   let chosenVoice = null;
+  let chineseVoice = null;
+  let wakeLock = null;
+  let wakeLockToastShown = false;
 
   let recognition = null;
   let recognitionToken = 0;
@@ -378,6 +408,9 @@
   let mediaChunks = [];
   let mediaStream = null;
   let recordedUrl = "";
+  let recordTimer = null;
+  let currentShadowText = "";
+  let currentShadowButton = null;
 
   let audioContext = null;
 
@@ -435,6 +468,7 @@
             en: row[4],
             zh: row[5],
             icon: wordIcons[key] || safeIcon(row[6] || "📘"),
+            image: row[7] || "",
             extra: false
           };
         });
@@ -458,12 +492,16 @@
             extra: true
           });
         });
+        const newJuniorPassage = window.YCT_NEW_JUNIOR_PASSAGES &&
+          window.YCT_NEW_JUNIOR_PASSAGES[book.id + "/" + unit.id];
+        const newJuniorTextbook = window.YCT_NEW_JUNIOR_TEXTBOOK &&
+          window.YCT_NEW_JUNIOR_TEXTBOOK[book.id + "/" + unit.id];
         return {
           id: unit.id,
           name: unit.name,
           title: unit.title,
-          passage: unit.passage,
-          textbook: unit.textbook,
+          passage: unit.passage && unit.passage.en ? unit.passage : (newJuniorPassage || unit.passage),
+          textbook: unit.textbook || newJuniorTextbook,
           words: words
         };
       })
@@ -716,11 +754,15 @@
     const learned = isLearned(bookId, unitId, word.w);
     const colors = tileColors(word.w);
     const icon = word.icon || word.w.charAt(0).toUpperCase();
+    const hasPhoto = !!word.image;
     const hasSentence = !!(word.en || word.zh);
     const badge = word.extra ? '<span class="word-badge">扩展</span>' : "";
     const posLabel = posWithChinese(word.pos);
     const forms = formsForWord(word);
     const formsHTML = forms ? '<div class="word-forms">' + escapeHTML(forms) + "</div>" : "";
+    const iconMarkup = hasPhoto
+      ? '<img class="word-photo" src="' + escapeAttr(word.image) + '" alt="" loading="lazy">'
+      : iconHTML(icon);
     const sentenceHTML = hasSentence
       ? '<div class="word-sentence">' +
           (word.en ? '<span class="en">' + highlightWord(word.en, word.w) + "</span>" : "") +
@@ -734,7 +776,7 @@
     return (
       '<div class="word-row" data-index="' + index + '" style="--tile-a:' + colors[0] + ";--tile-b:" + colors[1] +
       ";animation-delay:" + Math.min(index * 18, 160) + 'ms">' +
-        '<div class="word-icon' + (word.icon ? "" : " letter-icon") + '" aria-hidden="true">' + escapeHTML(icon) + "</div>" +
+        '<div class="word-icon' + (word.icon || hasPhoto ? "" : " letter-icon") + (hasPhoto ? " has-photo" : "") + '" aria-hidden="true">' + iconMarkup + "</div>" +
         '<div class="word-main">' +
           '<div class="word-top">' +
             '<span class="word-text">' + escapeHTML(word.w) + "</span>" +
@@ -803,6 +845,8 @@
     const book = currentBook();
     const unit = currentUnit();
     passageTitle.textContent = unit.title;
+    const passageEn = (unit.passage && unit.passage.en) || "本单元跟读短文正在补充。";
+    const passageZhText = (unit.passage && unit.passage.zh) || "译文待补。";
 
     const textbook = unit.textbook;
     textbookLines = [];
@@ -831,8 +875,11 @@
       textbookEmpty.classList.remove("hidden");
       const query = [book.series, book.name, unit.name, unit.title, "课文原文"].join(" ");
       textbookSearch.href = "https://www.baidu.com/s?wd=" + encodeURIComponent(query);
+      if (textbookSearchBing) {
+        textbookSearchBing.href = "https://www.bing.com/search?q=" + encodeURIComponent(query);
+      }
     }
-    passageSentences = splitSentences(unit.passage.en);
+    passageSentences = splitSentences(passageEn);
     passageBody.innerHTML = passageSentences.map((sentence, index) =>
       '<div class="sentence" data-index="' + index + '">' +
         '<span class="sentence-index">' + (index + 1) + "</span>" +
@@ -844,7 +891,7 @@
       "</div>"
     ).join("");
 
-    passageZh.textContent = unit.passage.zh;
+    passageZh.textContent = passageZhText;
     passageZh.classList.toggle("hidden", !state.passageZhVisible);
     passageZhBtn.textContent = state.passageZhVisible ? "隐藏译文" : "显示译文";
     passageProgress.textContent = "0 / " + passageSentences.length + " 句";
@@ -978,6 +1025,7 @@
 
     renderCalendar();
     renderBadges(streak, learned);
+    renderShare();
   }
 
   function todayStudiedCount() {
@@ -994,6 +1042,425 @@
       if (record && record.last === today) keys.add(key);
     });
     return keys.size;
+  }
+
+  function todayReviewCount() {
+    const today = dateKey(new Date());
+    return Object.keys(state.review).filter((key) => {
+      const record = state.review[key];
+      return record && record.last === today;
+    }).length;
+  }
+
+  function findWordByKey(key) {
+    const parts = String(key).split("/");
+    if (parts.length < 3) return null;
+    const book = books.find((item) => item.id === parts[0]);
+    if (!book) return null;
+    const unit = book.units.find((item) => item.id === parts[1]);
+    if (!unit) return null;
+    return unit.words.find((word) => word.w === parts.slice(2).join("/")) || null;
+  }
+
+  function pickTodayWords(limit) {
+    const count = Math.max(1, Number(limit) || 1);
+    const today = dateKey(new Date());
+    const learnedWords = [];
+    Object.keys(state.learned).forEach((key) => {
+      const value = state.learned[key];
+      if (typeof value !== "number" || dateKey(new Date(value)) !== today) return;
+      const word = findWordByKey(key);
+      if (word && !learnedWords.some((item) => item.w === word.w && item.cn === word.cn)) {
+        learnedWords.push(word);
+      }
+    });
+    if (learnedWords.length) {
+      return { words: learnedWords.slice(0, count), learnedToday: true };
+    }
+    return { words: currentUnit().words.slice(0, count), learnedToday: false };
+  }
+
+  function pickTodayWord() {
+    const picked = pickTodayWords(1);
+    return { word: picked.words[0] || null, learnedToday: picked.learnedToday };
+  }
+
+  function shareEncouragement() {
+    const studied = todayStudiedCount();
+    const reviewed = todayReviewCount();
+    const streak = calcStreak();
+    const goal = state.settings.dailyGoal || 10;
+    const remaining = Math.max(0, goal - studied);
+    if (studied >= goal) {
+      if (streak >= 7) return "目标达成，连续 " + streak + " 天，明天继续把这个状态留住。";
+      if (streak >= 3) return "目标达成，连续 " + streak + " 天，手感越来越稳。";
+      if (reviewed > 0) return "目标达成，还复习了 " + reviewed + " 个词，今天很扎实。";
+      return "目标达成，明天再来一组，把手感留住。";
+    }
+    if (studied > 0) return "已经读了 " + studied + " 个，再读 " + remaining + " 个就达标。";
+    return "先读第一个词，今天就算开始。";
+  }
+
+  function shareLine() {
+    const studied = todayStudiedCount();
+    const streak = calcStreak();
+    const tone = shareTone % 3;
+    if (streak >= 7) {
+      return [
+        "连续 " + streak + " 天，语感正在长出来。",
+        "第 " + streak + " 天，单词已经成了日常。",
+        "连续 " + streak + " 天，今天也没掉链子。"
+      ][tone];
+    }
+    if (streak >= 3) {
+      return [
+        "连续 " + streak + " 天，开始有点上头了。",
+        "第 " + streak + " 天，手感越来越稳。",
+        "连续 " + streak + " 天，先别停。"
+      ][tone];
+    }
+    if (studied >= 10) {
+      return [
+        "今天也认真读完了 " + studied + " 个词。",
+        "把 " + studied + " 个单词，稳稳装进脑袋。",
+        "今天的单词任务，拿下。"
+      ][tone];
+    }
+    if (studied === 0) {
+      return [
+        "先开个头，今天从第一个词开始。",
+        "第 1 天，先读一个算一个。",
+        "今天先热热身。"
+      ][tone];
+    }
+    return [
+      "今天也认真读了几个词。",
+      "一点点，也算数。",
+      "先读几个，明天继续。"
+    ][tone];
+  }
+
+  function buildShareText() {
+    const studied = todayStudiedCount();
+    const reviewed = todayReviewCount();
+    const streak = calcStreak();
+    const book = currentBook();
+    const unit = currentUnit();
+    const picked = pickTodayWords(3);
+    const lines = [];
+    lines.push(shareLine());
+    lines.push("");
+    if (studied > 0) {
+      lines.push("✅ 新学 " + studied + " 个词" + (reviewed ? " · 复习 " + reviewed + " 个" : ""));
+    } else {
+      lines.push("🌱 今天先从第一个词开始");
+    }
+    if (streak > 0) lines.push("🔥 连续 " + streak + " 天");
+    lines.push("📖 " + book.name + " · " + unit.name + " " + unit.title);
+    if (picked.words.length) {
+      lines.push("");
+      lines.push(picked.learnedToday ? "📚 今日收获：" : "📚 今天要读：");
+      picked.words.forEach((word) => {
+        lines.push("· " + word.w + " " + word.cn);
+      });
+    }
+    lines.push("");
+    lines.push("💪 " + shareEncouragement());
+    lines.push("一起来读：" + PUBLIC_URL);
+    lines.push("#英词通 #外研版英语 #每日打卡");
+    return lines.join("\n");
+  }
+
+  function renderShare(force) {
+    if (!shareText) return;
+    const studied = todayStudiedCount();
+    const reviewed = todayReviewCount();
+    const streak = calcStreak();
+    const picked = pickTodayWords(3);
+    if (sharePreviewLine) sharePreviewLine.textContent = shareLine();
+    if (sharePreviewDate) sharePreviewDate.textContent = formatDate(new Date());
+    if (sharePreviewStreak) sharePreviewStreak.textContent = String(streak);
+    if (sharePreviewStudied) sharePreviewStudied.textContent = String(studied);
+    if (sharePreviewReviewed) sharePreviewReviewed.textContent = String(reviewed);
+    if (sharePreviewWord) {
+      sharePreviewWord.classList.toggle("hidden", !picked.words.length);
+      if (picked.words.length) {
+        sharePreviewWord.innerHTML = (picked.learnedToday ? "今日收获：" : "今天要读：") +
+          picked.words.map((word) => "<br><b>" + escapeHTML(word.w) + "</b> " + escapeHTML(word.cn)).join("");
+      }
+    }
+    if (!force && document.activeElement === shareText) return;
+    shareText.value = buildShareText();
+  }
+
+  async function copyShareText() {
+    const text = shareText.value;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("文案已复制，可直接发朋友圈");
+    } catch (error) {
+      shareText.focus();
+      shareText.select();
+      try {
+        document.execCommand("copy");
+        showToast("文案已复制，可直接发朋友圈");
+      } catch (copyError) {
+        showToast("复制失败，请长按选择文本");
+      }
+    }
+  }
+
+  async function shareSummary() {
+    const text = shareText.value;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "英词通学习打卡",
+          text: text,
+          url: PUBLIC_URL
+        });
+        return;
+      } catch (error) {
+        if (error && error.name === "AbortError") return;
+      }
+    }
+    copyShareText();
+  }
+
+  function downloadShareImage() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1440;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      showToast("当前浏览器不支持生成分享图");
+      return;
+    }
+
+    const rounded = (x, y, w, h, r) => {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    };
+
+    const wrap = (text, x, y, maxWidth, lineHeight, maxLines) => {
+      const chars = String(text).split("");
+      let line = "";
+      let lineIndex = 0;
+      for (let i = 0; i < chars.length; i += 1) {
+        const test = line + chars[i];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, y + lineIndex * lineHeight);
+          line = chars[i];
+          lineIndex += 1;
+          if (lineIndex >= maxLines) return;
+        } else {
+          line = test;
+        }
+      }
+      if (line && lineIndex < maxLines) ctx.fillText(line, x, y + lineIndex * lineHeight);
+    };
+
+    const clip = (text, maxWidth) => {
+      const value = String(text || "");
+      let fitted = value;
+      while (fitted.length > 1 && ctx.measureText(fitted).width > maxWidth) {
+        fitted = fitted.slice(0, -1);
+      }
+      return fitted === value ? value : fitted + "…";
+    };
+
+    const studied = todayStudiedCount();
+    const reviewed = todayReviewCount();
+    const streak = calcStreak();
+    const goal = state.settings.dailyGoal || 10;
+    const book = currentBook();
+    const unit = currentUnit();
+    const todayWord = pickTodayWord();
+    const picked = pickTodayWords(4);
+    const headline = shareLine();
+    const encouragement = shareEncouragement();
+
+    ctx.fillStyle = "#f6f1e7";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#ffe1d3";
+    ctx.beginPath();
+    ctx.arc(985, 75, 255, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#dcefe9";
+    ctx.beginPath();
+    ctx.arc(-30, 1370, 235, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#e8613c";
+    ctx.font = 'bold 48px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText("英词通", 80, 112);
+    ctx.fillStyle = "#8b857a";
+    ctx.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText("外研版 · 听读打卡", 80, 154);
+    ctx.textAlign = "right";
+    ctx.fillText(formatDate(new Date()), 1000, 112);
+    ctx.textAlign = "left";
+
+    ctx.fillStyle = "#2c2a26";
+    ctx.font = 'bold 54px "Microsoft YaHei", "PingFang SC", sans-serif';
+    wrap(headline, 80, 258, 920, 70, 2);
+
+    const gradient = ctx.createLinearGradient(80, 340, 1000, 590);
+    gradient.addColorStop(0, "#ff9a6e");
+    gradient.addColorStop(1, "#d94f32");
+    ctx.fillStyle = gradient;
+    rounded(80, 340, 920, 250, 36);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(255,253,248,.82)";
+    ctx.font = '26px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText("连续打卡", 120, 405);
+    ctx.fillStyle = "#fffdf8";
+    if (streak > 0) {
+      ctx.font = 'bold 108px "Microsoft YaHei", "PingFang SC", sans-serif';
+      const streakText = String(streak);
+      ctx.fillText(streakText, 118, 512);
+      const streakWidth = ctx.measureText(streakText).width;
+      ctx.font = '32px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText("天", 118 + streakWidth + 12, 505);
+    } else {
+      ctx.font = 'bold 72px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText("第 1 天", 118, 505);
+    }
+    ctx.textAlign = "right";
+    ctx.fillStyle = "rgba(255,253,248,.78)";
+    ctx.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText("今日目标", 960, 405);
+    ctx.fillStyle = "#fffdf8";
+    ctx.font = 'bold 44px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText(studied + " / " + goal, 960, 475);
+    ctx.textAlign = "left";
+
+    ctx.fillStyle = "rgba(255,255,255,.24)";
+    rounded(120, 552, 840, 10, 5);
+    ctx.fill();
+    const progressWidth = Math.max(0, Math.min(1, studied / goal)) * 840;
+    if (progressWidth > 0) {
+      ctx.fillStyle = "#fffdf8";
+      rounded(120, 552, progressWidth, 10, 5);
+      ctx.fill();
+    }
+
+    const stats = [
+      ["今日单词", studied],
+      ["今日复习", reviewed],
+      ["累计打卡", state.checkins.length]
+    ];
+    stats.forEach((item, index) => {
+      const x = 80 + index * 317;
+      ctx.fillStyle = "#fffdf8";
+      rounded(x, 615, 286, 120, 26);
+      ctx.fill();
+      ctx.fillStyle = "#8b857a";
+      ctx.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(item[0], x + 24, 657);
+      ctx.fillStyle = "#2c2a26";
+      ctx.font = 'bold 44px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(String(item[1]), x + 24, 717);
+    });
+
+    ctx.fillStyle = "#fffdf8";
+    rounded(80, 765, 920, 380, 32);
+    ctx.fill();
+    ctx.fillStyle = "#8b857a";
+    ctx.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText(todayWord.learnedToday ? "今天记住的一个词" : "今天在读的一个词", 120, 827);
+
+    if (todayWord.word) {
+      ctx.fillStyle = "#2c2a26";
+      ctx.font = 'bold 54px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(clip(todayWord.word.w, 430), 120, 902);
+      if (todayWord.word.ipa) {
+        ctx.fillStyle = "#8b857a";
+        ctx.font = '27px "Microsoft YaHei", "PingFang SC", sans-serif';
+        ctx.fillText(todayWord.word.ipa, 120, 944);
+      }
+      ctx.fillStyle = "#514d45";
+      ctx.font = '31px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(clip(todayWord.word.cn, 430), 120, 998);
+      if (todayWord.word.en) {
+        ctx.fillStyle = "#514d45";
+        ctx.font = '23px "Microsoft YaHei", "PingFang SC", sans-serif';
+        wrap("“" + todayWord.word.en + "”", 120, 1042, 440, 33, 2);
+      }
+      if (todayWord.word.zh) {
+        ctx.fillStyle = "#8b857a";
+        ctx.font = '22px "Microsoft YaHei", "PingFang SC", sans-serif';
+        wrap(todayWord.word.zh, 120, 1098, 440, 31, 2);
+      }
+    } else {
+      ctx.fillStyle = "#2c2a26";
+      ctx.font = 'bold 36px "Microsoft YaHei", "PingFang SC", sans-serif';
+      wrap(book.name + " · " + unit.name + " " + unit.title, 120, 900, 430, 50, 2);
+    }
+
+    ctx.strokeStyle = "rgba(44,42,38,.1)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(590, 812);
+    ctx.lineTo(590, 1098);
+    ctx.stroke();
+
+    ctx.fillStyle = "#8b857a";
+    ctx.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText(picked.learnedToday ? "今日收获" : "今天要读", 626, 827);
+    picked.words.forEach((word, index) => {
+      const y = 882 + index * 56;
+      ctx.fillStyle = "#e8613c";
+      ctx.font = 'bold 25px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText("✓", 626, y);
+      ctx.fillStyle = "#2c2a26";
+      ctx.font = 'bold 27px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(clip(word.w, 300), 660, y);
+      ctx.fillStyle = "#8b857a";
+      ctx.font = '21px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.fillText(clip(word.cn, 300), 660, y + 25);
+    });
+
+    ctx.fillStyle = "#2c2a26";
+    ctx.font = 'bold 32px "Microsoft YaHei", "PingFang SC", sans-serif';
+    wrap("💪 " + encouragement, 80, 1190, 920, 42, 2);
+
+    ctx.fillStyle = "#e3f4f0";
+    rounded(80, 1262, 920, 84, 24);
+    ctx.fill();
+    ctx.fillStyle = "#247d72";
+    ctx.font = 'bold 27px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText(PUBLIC_URL, 120, 1314);
+
+    ctx.fillStyle = "#8b857a";
+    ctx.font = '24px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillText("英词通 · 作者 安得半日闲", 80, 1394);
+
+    const filename = "english-daily-checkin-" + dateKey(new Date()) + ".png";
+    const link = document.createElement("a");
+    if (canvas.toBlob) {
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+        showToast("分享图已生成");
+      }, "image/png");
+    } else {
+      link.href = canvas.toDataURL("image/png");
+      link.download = filename;
+      link.click();
+      showToast("分享图已生成");
+    }
   }
 
   function renderCalendar() {
@@ -1508,9 +1975,34 @@
 
   function loadVoices() {
     if (!speechSupported) return;
-    voices = (synth.getVoices() || []).filter((voice) => /^en/i.test(voice.lang));
+    allVoices = synth.getVoices() || [];
+    voices = allVoices.filter((voice) => /^en/i.test(voice.lang));
+    chineseVoice = pickChineseVoice();
     chosenVoice = pickVoice();
     renderVoiceOptions();
+  }
+
+  function pickChineseVoice() {
+    const chinese = allVoices.filter((voice) => /^zh(-|_)/i.test(voice.lang));
+    if (!chinese.length) return null;
+    const preferences = [
+      /xiaoxiao/i,
+      /xiaoyi/i,
+      /yunxi/i,
+      /yunyang/i,
+      /yunjian/i,
+      /natural/i,
+      /neural/i,
+      /huihui/i,
+      /yaoyao/i,
+      /kangkang/i,
+      /female/i
+    ];
+    for (let i = 0; i < preferences.length; i += 1) {
+      const found = chinese.find((voice) => preferences[i].test(voice.name));
+      if (found) return found;
+    }
+    return chinese.find((voice) => /^zh(-|_)CN/i.test(voice.lang)) || chinese[0];
   }
 
   function pickVoice() {
@@ -1571,7 +2063,7 @@
     }
   }
 
-  function speakAsync(text, rate) {
+  function speakAsync(text, rate, options) {
     return new Promise((resolve) => {
       const clean = String(text || "").trim();
       if (!clean) {
@@ -1586,15 +2078,27 @@
 
       const style = styleConfig();
       const utterance = new SpeechSynthesisUtterance(clean);
-      if (chosenVoice) {
-        utterance.voice = chosenVoice;
-        utterance.lang = chosenVoice.lang;
+      const chinese = /[\u3400-\u9fff]/.test(clean);
+      if (chinese) {
+        if (chineseVoice) {
+          utterance.voice = chineseVoice;
+          utterance.lang = chineseVoice.lang;
+        } else {
+          utterance.lang = "zh-CN";
+        }
+        utterance.rate = Math.max(0.65, (rate || style.rate) * 0.95);
       } else {
-        utterance.lang = "en-US";
+        if (chosenVoice) {
+          utterance.voice = chosenVoice;
+          utterance.lang = chosenVoice.lang;
+        } else {
+          utterance.lang = "en-US";
+        }
+        utterance.rate = rate || style.rate;
       }
-      utterance.rate = rate || style.rate;
-      utterance.pitch = style.pitch;
-      utterance.volume = 1;
+      const tuning = options || {};
+      utterance.pitch = typeof tuning.pitch === "number" ? tuning.pitch : style.pitch;
+      utterance.volume = typeof tuning.volume === "number" ? tuning.volume : 1;
 
       let finished = false;
       let fallback = null;
@@ -1608,10 +2112,12 @@
       utterance.onend = finish;
       utterance.onerror = finish;
 
-      try {
-        synth.cancel();
-      } catch (error) {
-        /* ignore */
+      if (tuning.cancel !== false) {
+        try {
+          synth.cancel();
+        } catch (error) {
+          /* ignore */
+        }
       }
       try {
         if (synth.paused) synth.resume();
@@ -1638,6 +2144,36 @@
       synth.cancel();
     } catch (error) {
       /* ignore */
+    }
+  }
+
+  async function requestWakeLock() {
+    if (!state.settings.keepAwake || !state.player.playing) return;
+    if (!("wakeLock" in navigator)) {
+      if (!wakeLockToastShown) {
+        wakeLockToastShown = true;
+        showToast("当前浏览器不支持屏幕常亮，请手动保持屏幕");
+      }
+      return;
+    }
+    if (wakeLock) return;
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", () => {
+        wakeLock = null;
+      });
+    } catch (error) {
+      if (!wakeLockToastShown) {
+        wakeLockToastShown = true;
+        showToast("屏幕常亮申请失败，请检查浏览器权限");
+      }
+    }
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock) {
+      try { wakeLock.release(); } catch (error) { /* ignore */ }
+      wakeLock = null;
     }
   }
 
@@ -1688,6 +2224,7 @@
 
   function startAutoPlay() {
     stopPassage();
+    speechCancel();
     const scope = state.settings.playScope || "unit";
     state.settings.playScope = scope;
     playerScope.value = scope;
@@ -1702,6 +2239,7 @@
     state.player.index = 0;
     state.player.playing = true;
     player.classList.add("show");
+    requestWakeLock();
     playQueue();
   }
 
@@ -1709,6 +2247,50 @@
     const queue = state.player.queue;
     if (!queue.length) return null;
     return queue[Math.min(state.player.index, queue.length - 1)];
+  }
+
+  async function spellWord(word, token) {
+    const letters = String(word).toUpperCase().replace(/[^A-Z]/g, "").split("");
+    if (!letters.length) return true;
+    if (token !== state.player.generation || !state.player.playing) return false;
+    if (state.settings.spellStyle === "crazy") {
+      const upper = String(word).toUpperCase();
+      const chant = letters.join(" ") + "! " + upper + "!";
+      await speakAsync(chant, 1.3, { pitch: 1.2, cancel: false });
+    } else {
+      await speakAsync(letters.join(" "), 0.95, { cancel: false });
+    }
+    return token === state.player.generation && state.player.playing;
+  }
+
+  async function speakWordBlock(item, token) {
+    const word = item.word;
+    const repeatTarget = () => Math.max(1, Math.min(3, Number(state.settings.wordRepeat) || 2));
+    let repeatCount = 0;
+
+    while (repeatCount < repeatTarget()) {
+      if (token !== state.player.generation || !state.player.playing) return false;
+      await speakAsync(word.w, wordRate(), { cancel: false });
+      repeatCount += 1;
+      if (repeatCount < repeatTarget()) await wait(260);
+    }
+
+    if (state.settings.spellLetters && word.w.indexOf(" ") === -1) {
+      if (!(await spellWord(word.w, token))) return false;
+      await wait(220);
+    }
+
+    if ((state.settings.wordMode === "meaning" || state.settings.wordMode === "both") && word.cn) {
+      if (token !== state.player.generation || !state.player.playing) return false;
+      await speakAsync(word.cn, sentenceRate(), { cancel: false });
+    }
+
+    if ((state.settings.wordMode === "example" || state.settings.wordMode === "both") && word.en) {
+      if (token !== state.player.generation || !state.player.playing) return false;
+      await speakAsync(word.en, sentenceRate(), { cancel: false });
+    }
+
+    return true;
   }
 
   async function playQueue() {
@@ -1721,6 +2303,7 @@
     }
 
     state.player.playing = true;
+    requestWakeLock();
     updatePlayerUI();
 
     while (state.player.playing && state.player.index < queue.length && token === state.player.generation) {
@@ -1729,16 +2312,8 @@
       updatePlayerUI();
       highlightQueueItem(item, true);
 
-      await speakAsync(item.word.w, wordRate());
-      if (token !== state.player.generation || !state.player.playing) return;
-
-      if (item.word.en) {
-        await wait(230);
-        if (token !== state.player.generation || !state.player.playing) return;
-
-        await speakAsync(item.word.en, sentenceRate());
-        if (token !== state.player.generation || !state.player.playing) return;
-      }
+      const spoken = await speakWordBlock(item, token);
+      if (!spoken) return;
 
       await wait(state.settings.gap);
       if (token !== state.player.generation || !state.player.playing) return;
@@ -1758,6 +2333,7 @@
 
     if (token === state.player.generation) {
       state.player.playing = false;
+      releaseWakeLock();
       updatePlayerUI();
       clearPlayingHighlights();
     }
@@ -1767,6 +2343,7 @@
     state.player.playing = false;
     state.player.generation += 1;
     speechCancel();
+    releaseWakeLock();
     updatePlayerUI();
   }
 
@@ -1775,6 +2352,7 @@
     state.player.generation += 1;
     state.player.playing = false;
     if (wasPlaying) speechCancel();
+    releaseWakeLock();
 
     if (hide) {
       state.player.queue = [];
@@ -1918,6 +2496,7 @@
     const colors = tileColors(word.w);
     openShadow({
       icon: word.icon || word.w.charAt(0).toUpperCase(),
+      image: word.image || "",
       title: word.w,
       ipa: word.ipa,
       meaning: word.pos + " " + word.cn,
@@ -1926,10 +2505,10 @@
       tileB: colors[1],
       targets: word.en
         ? [
-            { label: "🎙️ 读单词", text: word.w },
-            { label: "🎙️ 读例句", text: word.en }
+            { label: "🎙️ 跟读单词", text: word.w },
+            { label: "🎙️ 跟读例句", text: word.en }
           ]
-        : [{ label: "🎙️ 读单词", text: word.w }]
+        : [{ label: "🎙️ 跟读单词", text: word.w }]
     });
   }
 
@@ -1944,7 +2523,7 @@
       text: sentence,
       tileA: "#e3f4f0",
       tileB: "#b9e6dd",
-      targets: [{ label: "🎙️ 读这一句", text: sentence }]
+      targets: [{ label: "🎙️ 跟读这一句", text: sentence }]
     });
   }
 
@@ -1953,7 +2532,10 @@
     state.shadowSelected = 0;
 
     shadowTitle.textContent = config.title || "跟读练习";
-    shadowIcon.textContent = config.icon || "🎙️";
+    shadowIcon.innerHTML = config.image
+      ? '<img class="word-photo" src="' + escapeAttr(config.image) + '" alt="">'
+      : iconHTML(config.icon || "🎙️");
+    shadowIcon.classList.toggle("has-photo", !!config.image);
     shadowIcon.style.setProperty("--tile-a", config.tileA || "#fde7d8");
     shadowIcon.style.setProperty("--tile-b", config.tileB || "#f7cbb8");
 
@@ -1969,7 +2551,7 @@
     ).join("");
 
     shadowResult.classList.add("hidden");
-    shadowPrompt.textContent = "点击下面的按钮，大声读出来";
+    shadowPrompt.textContent = "点跟读按钮，自动录音 5 秒并回放";
     shadowListen.textContent = "🔊 先听一遍";
     noSpeechAttempts = 0;
     stopRecording(true);
@@ -1984,12 +2566,25 @@
     openModal("shadowModal");
   }
 
+  function startShadowPractice(text, button) {
+    currentShadowText = text;
+    currentShadowButton = button;
+    if (state.settings.scoring) {
+      const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (Recognition) {
+        startRecognition(text, button);
+        return;
+      }
+    }
+    startRecording(text, button);
+  }
+
   function startRecognition(text, button) {
+    currentShadowText = text;
+    currentShadowButton = button;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) {
-      showToast("当前浏览器不支持语音识别，已切换为录音回放");
-      updateShadowPrompt("当前浏览器不支持识别，正在准备录音回放…");
-      startRecording();
+      startRecording(text, button);
       return;
     }
 
@@ -2036,22 +2631,22 @@
       recognizing = false;
       setListening(button, false);
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        showRecordingFallback("麦克风权限被拒绝。请在地址栏允许麦克风，或直接用录音回放。");
+        showRecordingFallback("麦克风权限被拒绝。请在地址栏允许麦克风后再试。", false);
       } else if (event.error === "audio-capture") {
-        showRecordingFallback("没有检测到麦克风，请检查设备后再试。");
+        showRecordingFallback("没有检测到麦克风，请检查设备后再试。", false);
       } else if (event.error === "network") {
-        showRecordingFallback("语音识别服务连接失败（常见于网络限制），请用录音回放。");
+        showRecordingFallback("识别服务连接失败（常见于网络限制），已自动切换录音。", true);
       } else if (event.error === "language-not-supported") {
-        showRecordingFallback("当前浏览器不支持英语识别，请用录音回放。");
+        showRecordingFallback("当前浏览器不支持英语识别，已自动切换录音。", true);
       } else if (event.error === "no-speech") {
         noSpeechAttempts += 1;
         if (noSpeechAttempts >= 2) {
-          showRecordingFallback("连续两次没有识别到内容。识别服务可能不可用，请用录音回放。");
+          showRecordingFallback("连续两次没有识别到内容，已自动切换录音。", true);
         } else {
-          updateShadowPrompt("没有听清，再读一次；如果仍不行，请用录音回放。");
+          updateShadowPrompt("没有听清，再读一次；如果仍不行，会切换录音。");
         }
       } else if (event.error !== "aborted") {
-        showRecordingFallback("识别服务暂时不可用，请用录音回放。");
+        showRecordingFallback("识别服务暂时不可用，已自动切换录音。", true);
       }
     };
 
@@ -2062,9 +2657,9 @@
       if (recognitionError) return;
       if (!finalText && shadowResult.classList.contains("hidden")) {
         if (noSpeechAttempts >= 2) {
-          showRecordingFallback("识别服务没有返回结果，请用录音回放。");
+          showRecordingFallback("识别服务没有返回结果，已自动切换录音。", true);
         } else {
-          updateShadowPrompt("没有识别到内容。可以再试一次，或点「录音回放」。");
+          updateShadowPrompt("没有识别到内容。可以再试一次，或点跟读按钮录音。");
         }
       }
     };
@@ -2074,25 +2669,43 @@
     } catch (error) {
       recognizing = false;
       setListening(button, false);
-      showRecordingFallback("无法启动语音识别，请用录音回放。");
+      showRecordingFallback("无法启动语音识别，已自动切换录音。", true);
     }
   }
 
-  function showRecordingFallback(message) {
+  function showRecordingFallback(message, autoRecord) {
     updateShadowPrompt(message);
-    if (shadowRecord) {
-      shadowRecord.classList.add("record-attention");
-      setTimeout(() => shadowRecord.classList.remove("record-attention"), 2600);
+    if (autoRecord && currentShadowText) {
+      setTimeout(() => startRecording(currentShadowText, currentShadowButton), 700);
     }
   }
 
-  async function startRecording() {
+  function setRecordingButton(button, recording) {
+    if (!button) return;
+    if (recording) {
+      button.dataset.original = button.textContent;
+      button.textContent = "🔴 录音中…";
+      button.classList.add("listening");
+      $$(".target-btn", shadowTargets).forEach((item) => {
+        if (item !== button) item.disabled = true;
+      });
+    } else {
+      button.textContent = button.dataset.original || "🎤 跟读";
+      button.classList.remove("listening");
+      $$(".target-btn", shadowTargets).forEach((item) => { item.disabled = false; });
+    }
+  }
+
+  async function startRecording(text, button) {
+    currentShadowText = text || currentShadowText;
+    currentShadowButton = button || currentShadowButton;
+
     if (mediaRecorder && mediaRecorder.state === "recording") {
       stopRecording(false);
       return;
     }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-      updateShadowPrompt("当前浏览器不支持录音回放，请使用 Chrome 或 Edge。");
+      updateShadowPrompt("当前浏览器不支持录音，请使用 Chrome 或 Edge。");
       return;
     }
 
@@ -2133,6 +2746,10 @@
     };
 
     recorder.onstop = () => {
+      if (recordTimer) {
+        clearTimeout(recordTimer);
+        recordTimer = null;
+      }
       const blob = new Blob(mediaChunks, { type: recorder.mimeType || "audio/webm" });
       if (recordedUrl) URL.revokeObjectURL(recordedUrl);
       recordedUrl = URL.createObjectURL(blob);
@@ -2141,22 +2758,34 @@
       audio.controls = true;
       audio.preload = "auto";
       audio.src = recordedUrl;
+      audio.autoplay = true;
       shadowPlayback.appendChild(audio);
       shadowPlayback.classList.remove("hidden");
       shadowResult.classList.add("hidden");
-      updateShadowPrompt("录好了，点播放听听自己的发音，再和原音对比。");
-      shadowRecord.textContent = "🎙️ 重新录音";
+      updateShadowPrompt("录好了，正在回放；可以点播放再听，或重新跟读。");
+      setRecordingButton(currentShadowButton, false);
+      if (shadowRecord) shadowRecord.textContent = "🎙️ 录音回放";
       if (mediaStream) mediaStream.getTracks().forEach((track) => track.stop());
       mediaStream = null;
       mediaRecorder = null;
+      audio.play().catch(() => {});
     };
 
     recorder.start();
-    shadowRecord.textContent = "⏹ 停止录音";
-    updateShadowPrompt("正在录音… 读完点「停止录音」");
+    setRecordingButton(currentShadowButton, true);
+    updateShadowPrompt("正在录音… 5 秒后自动停止并回放");
+    recordTimer = setTimeout(() => {
+      if (mediaRecorder === recorder && recorder.state === "recording") {
+        try { recorder.stop(); } catch (error) { /* ignore */ }
+      }
+    }, 5000);
   }
 
   function stopRecording(clear) {
+    if (recordTimer) {
+      clearTimeout(recordTimer);
+      recordTimer = null;
+    }
     if (mediaRecorder && mediaRecorder.state === "recording") {
       if (clear) mediaRecorder.onstop = null;
       try { mediaRecorder.stop(); } catch (error) { /* ignore */ }
@@ -2166,6 +2795,7 @@
       mediaStream = null;
     }
     mediaRecorder = null;
+    setRecordingButton(currentShadowButton, false);
     if (shadowRecord) shadowRecord.textContent = "🎙️ 录音回放";
     if (clear) {
       if (recordedUrl) {
@@ -2176,6 +2806,8 @@
         shadowPlayback.innerHTML = "";
         shadowPlayback.classList.add("hidden");
       }
+      currentShadowText = "";
+      currentShadowButton = null;
     }
   }
 
@@ -2317,6 +2949,18 @@
     if (playScopeSelect) playScopeSelect.value = state.settings.playScope;
     if (playerScope) playerScope.value = state.settings.playScope;
     if (dailyGoalSelect) dailyGoalSelect.value = String(state.settings.dailyGoal);
+    if (wordRepeatSelect) wordRepeatSelect.value = String(state.settings.wordRepeat);
+    if (spellToggle) spellToggle.checked = !!state.settings.spellLetters;
+    if (spellStyleSelect) {
+      spellStyleSelect.value = state.settings.spellStyle === "crazy" ? "crazy" : "standard";
+      spellStyleSelect.disabled = !state.settings.spellLetters;
+    }
+    if (keepAwakeToggle) keepAwakeToggle.checked = state.settings.keepAwake !== false;
+    if (wordModeChips) {
+      $$(".style-chip", wordModeChips).forEach((button) => {
+        button.classList.toggle("active", button.dataset.wordMode === state.settings.wordMode);
+      });
+    }
 
     if (dataSummary) {
       const unitCount = books.reduce((sum, book) => sum + book.units.length, 0);
@@ -2392,6 +3036,15 @@
   }
 
   /* ---------- Utilities ---------- */
+
+  function iconHTML(icon) {
+    const value = String(icon || "");
+    const file = window.YCT_TWEMOJI && window.YCT_TWEMOJI[value];
+    if (file) {
+      return '<img src="icons/twemoji/' + escapeAttr(file) + '" alt="" loading="lazy">';
+    }
+    return escapeHTML(value);
+  }
 
   function tileColors(word) {
     let hash = 0;
@@ -2480,10 +3133,20 @@
   function loadSettings() {
     const saved = loadObject(STORAGE.settings, {});
     const settings = Object.assign({}, DEFAULT_SETTINGS, saved || {});
+    if (!saved || !saved.scoringMigrated) {
+      settings.scoring = false;
+      settings.scoringMigrated = true;
+    }
     if (!STYLES[settings.style]) settings.style = DEFAULT_SETTINGS.style;
     if (!["compact", "comfortable"].includes(settings.layout)) settings.layout = DEFAULT_SETTINGS.layout;
     if (!["unit", "book", "stage"].includes(settings.playScope)) settings.playScope = DEFAULT_SETTINGS.playScope;
     if (!["choice", "spelling", "listening"].includes(settings.reviewMode)) settings.reviewMode = DEFAULT_SETTINGS.reviewMode;
+    if (!["word", "example", "meaning", "both"].includes(settings.wordMode)) settings.wordMode = DEFAULT_SETTINGS.wordMode;
+    const repeat = Number(settings.wordRepeat);
+    settings.wordRepeat = [1, 2, 3].includes(repeat) ? repeat : DEFAULT_SETTINGS.wordRepeat;
+    settings.spellLetters = !!settings.spellLetters;
+    settings.spellStyle = settings.spellStyle === "crazy" ? "crazy" : "standard";
+    settings.keepAwake = settings.keepAwake !== false;
     settings.gap = Number(settings.gap) || DEFAULT_SETTINGS.gap;
     const goalOptions = [5, 10, 15, 20, 30];
     const goal = Number(settings.dailyGoal);
@@ -2640,6 +3303,16 @@
     });
 
     checkinBtn.addEventListener("click", checkIn);
+    copyShare.addEventListener("click", copyShareText);
+    if (refreshShare) {
+      refreshShare.addEventListener("click", () => {
+        shareTone = (shareTone + 1) % 3;
+        renderShare(true);
+        showToast("换了个说法");
+      });
+    }
+    shareNative.addEventListener("click", shareSummary);
+    downloadShare.addEventListener("click", downloadShareImage);
 
     calPrev.addEventListener("click", () => {
       state.calendarMonth = new Date(state.calendarMonth.getFullYear(), state.calendarMonth.getMonth() - 1, 1);
@@ -2726,10 +3399,15 @@
       const target = state.shadowTargets[index];
       if (!target) return;
       state.shadowSelected = index;
-      startRecognition(target.text, button);
+      startShadowPractice(target.text, button);
     });
 
-    shadowRecord.addEventListener("click", startRecording);
+    shadowRecord.addEventListener("click", () => {
+      const target = state.shadowTargets[state.shadowSelected] || state.shadowTargets[0];
+      if (!target) return;
+      const button = shadowTargets.querySelector('[data-target="' + state.shadowSelected + '"]');
+      startRecording(target.text, button);
+    });
 
     shadowListen.addEventListener("click", () => {
       const target = state.shadowTargets[state.shadowSelected] || state.shadowTargets[0];
@@ -2778,6 +3456,35 @@
       updateSettingsUI();
     });
 
+    wordModeChips.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-word-mode]");
+      if (!button) return;
+      const mode = button.dataset.wordMode;
+      if (!["word", "example", "meaning", "both"].includes(mode)) return;
+      state.settings.wordMode = mode;
+      saveSettings();
+      updateSettingsUI();
+    });
+
+    wordRepeatSelect.addEventListener("change", () => {
+      state.settings.wordRepeat = Number(wordRepeatSelect.value) || 2;
+      saveSettings();
+      showToast("单词重复 " + state.settings.wordRepeat + " 次");
+    });
+
+    spellToggle.addEventListener("change", () => {
+      state.settings.spellLetters = spellToggle.checked;
+      if (spellStyleSelect) spellStyleSelect.disabled = !spellToggle.checked;
+      saveSettings();
+    });
+
+    if (spellStyleSelect) {
+      spellStyleSelect.addEventListener("change", () => {
+        state.settings.spellStyle = spellStyleSelect.value === "crazy" ? "crazy" : "standard";
+        saveSettings();
+      });
+    }
+
     gapRange.addEventListener("input", () => {
       state.settings.gap = Number(gapRange.value);
       gapLabel.textContent = state.settings.gap + "ms";
@@ -2812,6 +3519,23 @@
     scoreToggle.addEventListener("change", () => {
       state.settings.scoring = scoreToggle.checked;
       saveSettings();
+    });
+
+    keepAwakeToggle.addEventListener("change", () => {
+      state.settings.keepAwake = keepAwakeToggle.checked;
+      saveSettings();
+      if (state.player.playing) {
+        if (state.settings.keepAwake) requestWakeLock();
+        else releaseWakeLock();
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        wakeLock = null;
+        return;
+      }
+      if (state.player.playing) requestWakeLock();
     });
 
     resetBtn.addEventListener("click", resetProgress);

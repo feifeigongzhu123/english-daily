@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -95,6 +95,34 @@
           <div class="progress-track"><i id="unitProgressBar"></i></div>
         </div>
 
+        <div class="play-mode-bar">
+          <div class="mode-row">
+            <span class="mode-label">朗读模式</span>
+            <div class="chip-row" id="wordModeChips">
+              <button class="style-chip" type="button" data-word-mode="word">英</button>
+              <button class="style-chip" type="button" data-word-mode="example">英例</button>
+              <button class="style-chip active" type="button" data-word-mode="meaning">英中</button>
+              <button class="style-chip" type="button" data-word-mode="both">英中例</button>
+            </div>
+          </div>
+          <div class="mode-options">
+            <label>单词重复
+              <select id="wordRepeatSelect">
+                <option value="1">1 次</option>
+                <option value="2" selected>2 次</option>
+                <option value="3">3 次</option>
+              </select>
+            </label>
+            <label class="spell-toggle"><input type="checkbox" id="spellToggle"> 字母拼读</label>
+            <label>拼读风格
+              <select id="spellStyleSelect">
+                <option value="standard" selected>标准</option>
+                <option value="crazy">疯狂</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
         <div class="word-list" id="wordList"></div>
 
         <div class="list-footer">
@@ -127,8 +155,12 @@
           <div class="textbook-body" id="textbookBody"></div>
           <div class="textbook-zh hidden" id="textbookZh"></div>
           <div class="textbook-empty hidden" id="textbookEmpty">
-            暂未收录本单元教材原文。
-            <a id="textbookSearch" href="#" target="_blank" rel="noopener">搜索教材原文</a>
+            <strong>本单元原文暂未收录</strong>
+            <p>新版教材没有公开的电子文本，官方电子课本需登录且不能直接复制。这里只收录能核对的篇目；未收录的单元，可以先读下面的同主题短文。</p>
+            <div class="textbook-links">
+              <a id="textbookSearch" href="#" target="_blank" rel="noopener">百度搜索原文</a>
+              <a id="textbookSearchBing" href="#" target="_blank" rel="noopener">Bing 搜索原文</a>
+            </div>
           </div>
         </div>
 
@@ -239,6 +271,37 @@
           <div class="stat"><span>完成单元</span><b id="statUnits">0</b><small>个</small></div>
         </div>
 
+        <div class="share-card" id="shareCard">
+          <div class="share-head">
+            <div>
+              <p class="eyebrow">今日学习总结</p>
+              <h3>今天的学习，留个纪念</h3>
+            </div>
+            <span class="share-badge">可发朋友圈</span>
+          </div>
+          <div class="share-preview" id="sharePreview">
+            <div class="share-preview-top">
+              <span>英词通 · 今日打卡</span>
+              <span id="sharePreviewDate"></span>
+            </div>
+            <p class="share-preview-line" id="sharePreviewLine">今天也认真读了几个词。</p>
+            <div class="share-preview-stats">
+              <div><b id="sharePreviewStreak">0</b><span>天连续</span></div>
+              <div><b id="sharePreviewStudied">0</b><span>今日单词</span></div>
+              <div><b id="sharePreviewReviewed">0</b><span>今日复习</span></div>
+            </div>
+            <div class="share-preview-word hidden" id="sharePreviewWord"></div>
+          </div>
+          <textarea id="shareText" rows="5" spellcheck="false"></textarea>
+          <div class="share-actions">
+            <button class="btn primary small" id="shareNative" type="button">分享</button>
+            <button class="btn soft small" id="copyShare" type="button">复制文案</button>
+            <button class="btn ghost small" id="refreshShare" type="button">换个说法</button>
+            <button class="btn ghost small" id="downloadShare" type="button">保存分享图</button>
+          </div>
+          <p class="share-hint" id="shareHint">文案会自动生成；点「换个说法」可以换一种语气。</p>
+        </div>
+
         <div class="calendar-card">
           <div class="calendar-head">
             <h3 id="calendarTitle">—</h3>
@@ -329,13 +392,17 @@
               <input type="range" id="gapRange" min="400" max="2000" step="100" value="900">
               <div class="range-labels"><span>紧凑</span><span id="gapLabel">900ms</span><span>舒缓</span></div>
             </div>
+            <div class="setting-group row">
+              <div><span class="setting-label">播放时保持屏幕常亮</span><p class="setting-hint">自动播放期间请求屏幕常亮，暂停或关闭后释放</p></div>
+              <label class="switch"><input type="checkbox" id="keepAwakeToggle" aria-label="播放时保持屏幕常亮"><span></span></label>
+            </div>
           </div>
 
           <div class="settings-section">
             <h3>跟读与复习</h3>
             <div class="setting-group row">
-              <div><span class="setting-label">跟读评分</span><p class="setting-hint">朗读后显示识别结果与分数</p></div>
-              <label class="switch"><input type="checkbox" id="scoreToggle" aria-label="跟读评分"><span></span></label>
+              <div><span class="setting-label">跟读语音识别评分</span><p class="setting-hint">默认关闭，一键录音 5 秒并回放；开启后优先识别评分，失败会自动转录音（国内识别服务可能不可用）</p></div>
+              <label class="switch"><input type="checkbox" id="scoreToggle" aria-label="跟读语音识别评分"><span></span></label>
             </div>
             <div class="setting-group">
               <label for="dailyGoalSelect">每日学习目标</label>
@@ -358,7 +425,7 @@
             <p class="setting-hint" id="dataSummary">词库加载中…</p>
             <div class="settings-footer">
               <button class="btn ghost danger" id="resetBtn" type="button">重置学习记录</button>
-              <span class="about">英词通 v1.3 · 作者 安得半日闲</span>
+              <span class="about">英词通 v1.7.1 · 作者 安得半日闲</span>
             </div>
           </div>
         </div>
@@ -367,7 +434,7 @@
 
     <footer class="site-footer">
       <p>英词通 · 作者 安得半日闲</p>
-      <p>词库范围：外研版新标准（初中 6 册）/ 外研版新标准 2019（高中必修 + 选择性必修 7 册）</p>
+      <p>词库范围：外研版新标准（2026 新版初中 5 册 + 旧版初中 6 册）/ 外研版新标准 2019（高中 7 册）</p>
     </footer>
   </div>
 
@@ -424,11 +491,11 @@
       </div>
 
       <div class="shadow-playback hidden" id="shadowPlayback"></div>
-      <p class="shadow-hint">识别服务不可用时，可以用录音回放练习跟读。</p>
+      <p class="shadow-hint">点跟读按钮会自动录音 5 秒并回放；设置里可开启识别评分。</p>
 
       <div class="shadow-footer">
         <button class="btn soft small" id="shadowListen" type="button">🔊 先听一遍</button>
-        <button class="btn ghost small" id="shadowRecord" type="button">🎙️ 录音回放</button>
+        <button class="btn ghost small hidden" id="shadowRecord" type="button">🎙️ 录音回放</button>
         <button class="btn ghost small" id="shadowDone" type="button">完成</button>
       </div>
     </div>
@@ -437,6 +504,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="confetti-layer" id="confetti" aria-hidden="true"></div>
 
+  <script src="js/new-junior-passages.js"></script>
+  <script src="js/new-junior-textbook.js"></script>
+  <script src="js/data-junior-2026.js"></script>
   <script src="js/data-junior-a.js"></script>
   <script src="js/data-junior-b.js"></script>
   <script src="js/data-junior-c.js"></script>
@@ -462,6 +532,7 @@
   <script src="js/icons-senior-a2.js"></script>
   <script src="js/icons-senior-b.js"></script>
   <script src="js/icons-senior-c.js"></script>
+  <script src="js/twemoji-map.js"></script>
   <script src="js/app.js"></script>
   <script>
     if ("serviceWorker" in navigator) {

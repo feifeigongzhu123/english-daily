@@ -1,4 +1,4 @@
-const CACHE_NAME = "english-daily-v1.3.0";
+﻿const CACHE_NAME = "english-daily-v1.7.1";
 
 const ASSETS = [
   "./",
@@ -9,6 +9,9 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
+  "./js/new-junior-passages.js",
+  "./js/new-junior-textbook.js",
+  "./js/data-junior-2026.js",
   "./js/data-junior-a.js",
   "./js/data-junior-b.js",
   "./js/data-junior-c.js",
@@ -34,13 +37,21 @@ const ASSETS = [
   "./js/icons-senior-a2.js",
   "./js/icons-senior-b.js",
   "./js/icons-senior-c.js",
+  "./js/twemoji-map.js",
   "./js/app.js"
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS))
+      .then((cache) => Promise.all(ASSETS.map(async (url) => {
+        try {
+          const response = await fetch(url, { cache: "reload" });
+          if (response && response.ok) await cache.put(url, response);
+        } catch (error) {
+          /* keep installing even if one asset is unavailable */
+        }
+      })))
       .then(() => self.skipWaiting())
   );
 });
@@ -58,6 +69,21 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response && response.status === 200) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return response;
+      }).catch(async () => (
+        (await caches.match(event.request)) || (await caches.match("./index.html"))
+      ))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {

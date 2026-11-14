@@ -3,7 +3,7 @@ window.YCT_BOOKS = window.YCT_BOOKS || [];
 window.YCT_BOOKS.push({
   id: "j7a",
   stage: "junior",
-  name: "七年级上册",
+  name: "七年级上册（旧版）",
   short: "七上",
   series: "外研版新标准",
   units: [
@@ -188,7 +188,7 @@ window.YCT_BOOKS.push({
 window.YCT_BOOKS.push({
   id: "j7b",
   stage: "junior",
-  name: "七年级下册",
+  name: "七年级下册（旧版）",
   short: "七下",
   series: "外研版新标准",
   units: [
