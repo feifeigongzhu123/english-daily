@@ -395,8 +395,9 @@
   let shareTone = 0;
 
   const synth = window.speechSynthesis || null;
-  const speechSupported = !!synth;
+  const speechSupported = !!synth && typeof SpeechSynthesisUtterance !== "undefined";
   let activeAudio = null;
+  let speechWarningShown = false;
   let allVoices = [];
   let voices = [];
   let chosenVoice = null;
@@ -2075,8 +2076,13 @@
 
   function lookupVoiceAudio(text) {
     const pack = window.YCT_VOICE_PACK;
-    if (!pack || !pack.map) return "";
-    const entry = pack.map[normalizeSpeechKey(text)];
+    if (!pack) return "";
+    const key = normalizeSpeechKey(text);
+    if (/[\u3400-\u9fff]/.test(text)) {
+      return (pack.zh && pack.zh[key]) || "";
+    }
+    if (!pack.map) return "";
+    const entry = pack.map[key];
     if (!entry) return "";
     const selected = state.settings.englishVoice || "aria";
     return entry[selected] || entry.aria || "";
@@ -2088,7 +2094,7 @@
     if (!unit || !window.YCT_VOICE_PACK) return;
     const paths = new Set();
     unit.words.forEach((word) => {
-      [word.w, word.en].forEach((text) => {
+      [word.w, word.en, word.cn].forEach((text) => {
         const path = lookupVoiceAudio(text);
         if (path) paths.add(path);
       });
@@ -2142,7 +2148,7 @@
 
   async function speakAsync(text, rate, options) {
     const clean = String(text || "").trim();
-    if (clean && !/[\u3400-\u9fff]/.test(clean)) {
+    if (clean) {
       const audioPath = lookupVoiceAudio(clean);
       if (audioPath && await playAudioAsync(audioPath, rate)) return;
     }
@@ -2157,7 +2163,10 @@
         return;
       }
       if (!speechSupported) {
-        showToast("当前浏览器不支持语音朗读");
+        if (!speechWarningShown) {
+          speechWarningShown = true;
+          showToast("当前浏览器不支持系统朗读，内置发音仍可播放");
+        }
         resolve();
         return;
       }
