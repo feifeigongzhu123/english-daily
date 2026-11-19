@@ -26,6 +26,7 @@ VOICES = {
     "guy": ("Guy", "en-US-GuyNeural"),
     "sonia": ("Sonia", "en-GB-SoniaNeural"),
 }
+ZH_VOICE = "zh-CN-XiaoxiaoNeural"
 SAMPLE_FILES = {
     "aria": "02-Aria-女声.mp3",
     "jenny": "01-Jenny-女声.mp3",
@@ -40,11 +41,25 @@ def normalize(text):
     return " ".join(str(text or "").strip().lower().split())
 
 
-def load_texts():
+def read_book():
     text = DATA.read_text(encoding="utf-8")
     marker = "window.YCT_BOOKS.push("
     start = text.index(marker) + len(marker)
     book, _ = json.JSONDecoder().raw_decode(text[start:])
+    return book
+
+
+def unique_values(values):
+    unique = {}
+    for value in values:
+        key = normalize(value)
+        if key and key not in unique:
+            unique[key] = value
+    return unique
+
+
+def load_texts():
+    book = read_book()
     values = []
     for unit in book["units"]:
         for row in unit["words"]:
@@ -52,12 +67,17 @@ def load_texts():
             if row[4]:
                 values.append(row[4])
     values.extend(string.ascii_uppercase)
-    unique = {}
-    for value in values:
-        key = normalize(value)
-        if key and key not in unique:
-            unique[key] = value
-    return unique
+    return unique_values(values)
+
+
+def load_chinese_texts():
+    book = read_book()
+    values = []
+    for unit in book["units"]:
+        for row in unit["words"]:
+            if row[3]:
+                values.append(row[3])
+    return unique_values(values)
 
 
 async def synthesize(text, voice, path, semaphore):
@@ -102,6 +122,8 @@ async def main():
         for key in keys
     ])
     results = dict(zip(keys, built))
+    zh_texts = load_chinese_texts()
+    zh_entries = await build_voice("zh", ZH_VOICE, "中文", zh_texts, semaphore)
 
     SAMPLES.mkdir(parents=True, exist_ok=True)
     for key, filename in SAMPLE_FILES.items():
@@ -119,6 +141,7 @@ async def main():
         "default": "aria",
         "samples": {key: f"audio/samples/{key}.mp3" for key in VOICES},
         "map": full_map,
+        "zh": zh_entries,
     }
     PACK_JS.write_text(
         "window.YCT_VOICE_PACK = " + json.dumps(pack, ensure_ascii=False, separators=(",", ":")) + ";\n",
