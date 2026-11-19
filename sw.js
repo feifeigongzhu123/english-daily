@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "english-daily-v1.7.1";
+﻿const CACHE_NAME = "english-daily-v1.8.0";
 
 const ASSETS = [
   "./",
@@ -11,6 +11,11 @@ const ASSETS = [
   "./icons/apple-touch-icon.png",
   "./js/new-junior-passages.js",
   "./js/new-junior-textbook.js",
+  "./js/voice-pack.js",
+  "./audio/samples/aria.mp3",
+  "./audio/samples/jenny.mp3",
+  "./audio/samples/guy.mp3",
+  "./audio/samples/sonia.mp3",
   "./js/data-junior-2026.js",
   "./js/data-junior-a.js",
   "./js/data-junior-b.js",

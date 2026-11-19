@@ -16,6 +16,7 @@
 
   const DEFAULT_SETTINGS = {
     voiceURI: "",
+    englishVoice: "aria",
     style: "cheerful",
     gap: 900,
     layout: "compact",
@@ -320,6 +321,9 @@
   const settingsBtn = $("#settingsBtn");
   const settingsBack = $("#settingsBack");
   const playScopeSelect = $("#playScopeSelect");
+  const englishVoiceSelect = $("#englishVoiceSelect");
+  const englishVoicePreview = $("#englishVoicePreview");
+  const englishVoiceHint = $("#englishVoiceHint");
   const voiceSelect = $("#voiceSelect");
   const voicePreview = $("#voicePreview");
   const voiceHint = $("#voiceHint");
@@ -392,6 +396,7 @@
 
   const synth = window.speechSynthesis || null;
   const speechSupported = !!synth;
+  let activeAudio = null;
   let allVoices = [];
   let voices = [];
   let chosenVoice = null;
@@ -748,6 +753,7 @@
     wordList.innerHTML = unit.words.map((word, index) =>
       wordRowHTML(word, index, book.id, unit.id)
     ).join("");
+    prefetchUnitAudio(unit);
   }
 
   function wordRowHTML(word, index, bookId, unitId) {
@@ -2042,7 +2048,7 @@
       voiceSelect.innerHTML = '<option value="">系统默认英语声音</option>';
       voiceSelect.disabled = true;
       if (voiceHint) {
-        voiceHint.textContent = "当前系统未检测到英语语音。建议使用 Edge 浏览器，或在系统设置中安装英语语音包，朗读会更自然。";
+        voiceHint.textContent = "当前系统未检测到英语语音。英词通会优先播放内置的 Aria / Jenny / Guy / Sonia 发音；其他单元再用系统声音兜底。";
       }
       return;
     }
@@ -2063,7 +2069,87 @@
     }
   }
 
-  function speakAsync(text, rate, options) {
+  function normalizeSpeechKey(text) {
+    return String(text || "").trim().toLowerCase().replace(/\s+/g, " ");
+  }
+
+  function lookupVoiceAudio(text) {
+    const pack = window.YCT_VOICE_PACK;
+    if (!pack || !pack.map) return "";
+    const entry = pack.map[normalizeSpeechKey(text)];
+    if (!entry) return "";
+    const selected = state.settings.englishVoice || "aria";
+    return entry[selected] || entry.aria || "";
+  }
+
+  const prefetchedVoiceAudio = new Set();
+
+  function prefetchUnitAudio(unit) {
+    if (!unit || !window.YCT_VOICE_PACK) return;
+    const paths = new Set();
+    unit.words.forEach((word) => {
+      [word.w, word.en].forEach((text) => {
+        const path = lookupVoiceAudio(text);
+        if (path) paths.add(path);
+      });
+    });
+    paths.forEach((path) => {
+      if (prefetchedVoiceAudio.has(path)) return;
+      prefetchedVoiceAudio.add(path);
+      fetch(path, { cache: "force-cache" }).catch(() => {});
+    });
+  }
+
+  function playAudioAsync(path, rate) {
+    return new Promise((resolve) => {
+      if (!path) {
+        resolve(false);
+        return;
+      }
+      if (activeAudio) {
+        try {
+          activeAudio.pause();
+          activeAudio.currentTime = 0;
+        } catch (error) {
+          /* ignore */
+        }
+      }
+      const audio = new Audio(path);
+      activeAudio = audio;
+      audio.preload = "auto";
+      try {
+        audio.playbackRate = Math.max(0.75, Math.min(1.25, (Number(rate) || 0.95) / 0.95));
+        audio.preservesPitch = true;
+      } catch (error) {
+        /* ignore */
+      }
+      let finished = false;
+      const finish = (ok) => {
+        if (finished) return;
+        finished = true;
+        if (activeAudio === audio) activeAudio = null;
+        resolve(ok);
+      };
+      audio.onended = () => finish(true);
+      audio.onerror = () => finish(false);
+      audio.onpause = () => {
+        if (!audio.ended) finish(false);
+      };
+      audio.play().catch(() => finish(false));
+      setTimeout(() => finish(true), 20000);
+    });
+  }
+
+  async function speakAsync(text, rate, options) {
+    const clean = String(text || "").trim();
+    if (clean && !/[\u3400-\u9fff]/.test(clean)) {
+      const audioPath = lookupVoiceAudio(clean);
+      if (audioPath && await playAudioAsync(audioPath, rate)) return;
+    }
+    return speakSynthAsync(text, rate, options);
+  }
+
+  function speakSynthAsync(text, rate, options) {
     return new Promise((resolve) => {
       const clean = String(text || "").trim();
       if (!clean) {
@@ -2139,6 +2225,15 @@
   }
 
   function speechCancel() {
+    if (activeAudio) {
+      try {
+        activeAudio.pause();
+        activeAudio.currentTime = 0;
+      } catch (error) {
+        /* ignore */
+      }
+      activeAudio = null;
+    }
     if (!speechSupported) return;
     try {
       synth.cancel();
@@ -2253,6 +2348,17 @@
     const letters = String(word).toUpperCase().replace(/[^A-Z]/g, "").split("");
     if (!letters.length) return true;
     if (token !== state.player.generation || !state.player.playing) return false;
+    if (window.YCT_VOICE_PACK && window.YCT_VOICE_PACK.map) {
+      for (let index = 0; index < letters.length; index += 1) {
+        if (token !== state.player.generation || !state.player.playing) return false;
+        await speakAsync(letters[index], 1.0, { cancel: false });
+        if (index < letters.length - 1) await wait(60);
+      }
+      if (state.settings.spellStyle === "crazy") {
+        await speakAsync(word, 1.0, { cancel: false });
+      }
+      return token === state.player.generation && state.player.playing;
+    }
     if (state.settings.spellStyle === "crazy") {
       const upper = String(word).toUpperCase();
       const chant = letters.join(" ") + "! " + upper + "!";
@@ -2949,6 +3055,7 @@
     if (playScopeSelect) playScopeSelect.value = state.settings.playScope;
     if (playerScope) playerScope.value = state.settings.playScope;
     if (dailyGoalSelect) dailyGoalSelect.value = String(state.settings.dailyGoal);
+    if (englishVoiceSelect) englishVoiceSelect.value = state.settings.englishVoice;
     if (wordRepeatSelect) wordRepeatSelect.value = String(state.settings.wordRepeat);
     if (spellToggle) spellToggle.checked = !!state.settings.spellLetters;
     if (spellStyleSelect) {
@@ -3138,6 +3245,9 @@
       settings.scoringMigrated = true;
     }
     if (!STYLES[settings.style]) settings.style = DEFAULT_SETTINGS.style;
+    if (!["aria", "jenny", "guy", "sonia"].includes(settings.englishVoice)) {
+      settings.englishVoice = DEFAULT_SETTINGS.englishVoice;
+    }
     if (!["compact", "comfortable"].includes(settings.layout)) settings.layout = DEFAULT_SETTINGS.layout;
     if (!["unit", "book", "stage"].includes(settings.playScope)) settings.playScope = DEFAULT_SETTINGS.playScope;
     if (!["choice", "spelling", "listening"].includes(settings.reviewMode)) settings.reviewMode = DEFAULT_SETTINGS.reviewMode;
@@ -3429,6 +3539,29 @@
         updateShadowPrompt("轮到你了，按麦克风跟读");
       });
     });
+
+    if (englishVoiceSelect) {
+      englishVoiceSelect.addEventListener("change", () => {
+        state.settings.englishVoice = englishVoiceSelect.value;
+        saveSettings();
+        showToast("英词通发音已切换");
+      });
+    }
+
+    if (englishVoicePreview) {
+      englishVoicePreview.addEventListener("click", async () => {
+        const pack = window.YCT_VOICE_PACK;
+        const voice = state.settings.englishVoice || "aria";
+        const sample = pack && pack.samples && pack.samples[voice];
+        if (!sample) {
+          showToast("当前声音样例暂不可用");
+          return;
+        }
+        if (!(await playAudioAsync(sample, 1.0))) {
+          showToast("样例播放失败，请检查网络");
+        }
+      });
+    }
 
     voiceSelect.addEventListener("change", () => {
       state.settings.voiceURI = voiceSelect.value;
