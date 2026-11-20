@@ -109,13 +109,13 @@ async def main():
     completed = set(progress.get("completed", []))
     books = corpus["books"]
 
-    new_ids = {"j7a26", "j7b26", "j8a26", "j8b26", "j9a26"}
+    scope_ids = {"j7a26", "j7b26", "j8a26", "j8b26", "j9a26", "h1", "h2", "h3", "h4", "h5", "h6", "h7"}
     if args.next:
         pending = load_json(PENDING, {})
         if pending.get("book"):
             book_id = pending["book"]
         else:
-            book_id = next((b["id"] for b in books if b["id"] in new_ids and b["id"] not in completed), None)
+            book_id = next((b["id"] for b in books if b["id"] in scope_ids and b["id"] not in completed), None)
     else:
         book_id = args.book
     if not book_id:
