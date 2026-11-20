@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "english-daily-v1.8.1";
+﻿const CACHE_NAME = "english-daily-v1.9.0";
 
 const ASSETS = [
   "./",

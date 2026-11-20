@@ -2049,7 +2049,7 @@
       voiceSelect.innerHTML = '<option value="">系统默认英语声音</option>';
       voiceSelect.disabled = true;
       if (voiceHint) {
-        voiceHint.textContent = "当前系统未检测到英语语音。英词通会优先播放内置的 Aria / Jenny / Guy / Sonia 发音；其他单元再用系统声音兜底。";
+        voiceHint.textContent = "当前系统未检测到英语语音。英词通会优先播放内置的 Aria 发音和中文释义音频。";
       }
       return;
     }
@@ -2084,6 +2084,7 @@
     if (!pack.map) return "";
     const entry = pack.map[key];
     if (!entry) return "";
+    if (typeof entry === "string") return entry;
     const selected = state.settings.englishVoice || "aria";
     return entry[selected] || entry.aria || "";
   }
@@ -3254,9 +3255,7 @@
       settings.scoringMigrated = true;
     }
     if (!STYLES[settings.style]) settings.style = DEFAULT_SETTINGS.style;
-    if (!["aria", "jenny", "guy", "sonia"].includes(settings.englishVoice)) {
-      settings.englishVoice = DEFAULT_SETTINGS.englishVoice;
-    }
+    settings.englishVoice = "aria";
     if (!["compact", "comfortable"].includes(settings.layout)) settings.layout = DEFAULT_SETTINGS.layout;
     if (!["unit", "book", "stage"].includes(settings.playScope)) settings.playScope = DEFAULT_SETTINGS.playScope;
     if (!["choice", "spelling", "listening"].includes(settings.reviewMode)) settings.reviewMode = DEFAULT_SETTINGS.reviewMode;
