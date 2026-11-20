@@ -359,7 +359,10 @@
   const toastEl = $("#toast");
   const confettiLayer = $("#confetti");
 
-  const books = (window.YCT_BOOKS || []).map(normalizeBook);
+  const LEGACY_JUNIOR = new Set(["j7a", "j7b", "j8a", "j8b", "j9a", "j9b"]);
+  const books = (window.YCT_BOOKS || [])
+    .map(normalizeBook)
+    .filter((book) => !LEGACY_JUNIOR.has(book.id));
 
   const state = {
     stage: "junior",

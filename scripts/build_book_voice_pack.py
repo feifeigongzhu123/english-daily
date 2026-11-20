@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Build one book's default Aria + Chinese audio at a time."""
 
 import argparse
@@ -74,7 +74,7 @@ async def synthesize(text, voice, path, semaphore):
         for attempt in range(RETRIES):
             try:
                 communicate = edge_tts.Communicate(text, voice, rate="+0%", pitch="+0Hz")
-                await asyncio.wait_for(communicate.save(str(path)), timeout=45)
+                await asyncio.wait_for(communicate.save(str(path)), timeout=20)
                 if path.exists() and path.stat().st_size > 0:
                     return
             except Exception:
@@ -109,12 +109,13 @@ async def main():
     completed = set(progress.get("completed", []))
     books = corpus["books"]
 
+    new_ids = {"j7a26", "j7b26", "j8a26", "j8b26", "j9a26"}
     if args.next:
         pending = load_json(PENDING, {})
         if pending.get("book"):
             book_id = pending["book"]
         else:
-            book_id = next((b["id"] for b in books if b["id"] not in completed), None)
+            book_id = next((b["id"] for b in books if b["id"] in new_ids and b["id"] not in completed), None)
     else:
         book_id = args.book
     if not book_id:
