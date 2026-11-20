@@ -6,7 +6,7 @@
 - 单词图标：Twemoji 卡通图标（© Twitter, Inc and other contributors，CC-BY 4.0），已下载到 `icons/twemoji/`；另有少量缺失图标回退为系统 emoji。
 - 新版初中单词配图：来自英语朗读宝（yy.suyang123.com）公开页面的单词配图，已下载压缩到 `icons/words/`，仅用于个人学习；公开分发前请确认图片授权。旧版/高中词仍使用 Twemoji 或系统 emoji。
 - 语音合成与语音识别：浏览器 Web Speech API；不同浏览器/系统的音色和可用性不同。
-- 新版七上的英语神经语音（Aria / Jenny / Guy / Sonia）由 Microsoft Edge TTS 生成，位于 `audio/voices/`，仅用于个人学习；公开分发前请确认相关服务条款。
+- 全部 18 册的英语 Aria 发音和中文 Xiaoxiao 释义音频由 Microsoft Edge TTS 生成，位于 `audio/voices/aria/` 和 `audio/voices/zh/`，仅用于个人学习；公开分发前请确认相关服务条款。
 - 本项目不包含教材原版录音；如后续接入 Openverse、Wikimedia Commons 等开放图库，将另行补充授权与署名信息。
 
 如果发现某段内容侵犯了你的权利，请保留来源说明并联系作者删除或替换。
